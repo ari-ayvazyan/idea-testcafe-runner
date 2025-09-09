@@ -1,0 +1,96 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+    <id>at.itdo.idea-testcafe-runner</id>
+
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-name -->
+    <name>TestCafe Runner</name>
+
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor url="https://github.com/yourrepo/idea-testcafe-runner" email="support@itdo.at">IT-DO</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-description -->
+    <description><![CDATA[
+        <p><strong>Run TestCafe tests directly from IntelliJ IDEA with intuitive play buttons and customizable execution commands.</strong></p>
+        
+        <h3>Key Features:</h3>
+        <ul>
+            <li><strong>Smart Detection:</strong> Automatically finds TestCafe fixtures and tests in .spec.js, .spec.ts files</li>
+            <li><strong>One-Click Execution:</strong> Run tests with convenient play buttons next to test declarations</li>
+            <li><strong>Flexible Configuration:</strong> Customize TestCafe commands and browser settings</li>
+            <li><strong>Integrated Results:</strong> View test output directly in IntelliJ's run tool window</li>
+            <li><strong>Context Menu Support:</strong> Right-click to run tests from anywhere</li>
+            <li><strong>Multi-Format Support:</strong> Works with JavaScript, TypeScript, and ES6 TestCafe tests</li>
+        </ul>
+        
+        <h3>Perfect for:</h3>
+        <ul>
+            <li>Front-end developers using TestCafe for E2E testing</li>
+            <li>QA teams running automated browser tests</li>
+            <li>Teams wanting seamless IDE integration for test execution</li>
+        </ul>
+        
+        <p>Supports TestCafe's full feature set including live mode, parallel execution, and multiple browser testing.</p>
+    ]]></description>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>JavaScript</depends>
+
+    <!-- Extension points defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Line marker provider for run buttons -->
+        <codeInsight.lineMarkerProvider 
+            language="JavaScript" 
+            implementationClass="at.itdo.testcafe.TestCafeLineMarkerProvider" />
+        
+        <!-- Settings UI -->
+        <projectConfigurable 
+            parentId="tools" 
+            instance="at.itdo.testcafe.TestCafeSettingsConfigurable" 
+            id="at.itdo.testcafe.settings" 
+            displayName="TestCafe Runner" />
+        
+        <!-- Run Configuration -->
+        <configurationType 
+            implementation="at.itdo.testcafe.run.TestCafeConfigurationType" />
+        
+        <!-- Run Configuration Producer -->
+        <runConfigurationProducer 
+            implementation="at.itdo.testcafe.run.TestCafeRunConfigurationProducer" />
+        
+    </extensions>
+    
+    <!-- Actions -->
+    <actions>
+        <group id="TestCafeActions" text="TestCafe" description="TestCafe test runner actions">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+            <add-to-group group-id="MainToolBar" anchor="after" relative-to-action="RunnerActions"/>
+            
+            <action id="TestCafe.RunAllProject" 
+                    class="at.itdo.testcafe.actions.RunAllTestsInProjectAction" 
+                    text="Run All TestCafe Tests in Project" 
+                    description="Run all TestCafe tests in the current project">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt shift F10"/>
+            </action>
+            
+            <action id="TestCafe.RunAllDirectory" 
+                    class="at.itdo.testcafe.actions.RunAllTestsInDirectoryAction" 
+                    text="Run All TestCafe Tests in Directory" 
+                    description="Run all TestCafe tests in the selected directory">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt F10"/>
+            </action>
+            
+            <action id="TestCafe.Settings" 
+                    class="at.itdo.testcafe.actions.TestCafeSettingsAction" 
+                    text="TestCafe Runner Settings..." 
+                    description="Configure TestCafe Runner settings">
+            </action>
+        </group>
+    </actions>
+</idea-plugin>

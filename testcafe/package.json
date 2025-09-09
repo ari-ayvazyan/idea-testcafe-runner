@@ -1,0 +1,13 @@
+{
+  "name": "testcafe-tests",
+  "version": "1.0.0",
+  "description": "TestCafe test suite",
+  "main": "index.js",
+  "scripts": {
+    "test": "testcafe chrome tests/*.js",
+    "test:headless": "testcafe chrome:headless tests/*.js"
+  },
+  "devDependencies": {
+    "testcafe": "^3.6.2"
+  }
+}

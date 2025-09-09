@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew:*)",
+      "Bash(npm test)",
+      "WebFetch(domain:testcafe.io)",
+      "WebFetch(domain:devexpress.github.io)",
+      "WebSearch",
+      "Bash(pkill:*)",
+      "WebFetch(domain:plugins.jetbrains.com)",
+      "WebFetch(domain:github.com)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
