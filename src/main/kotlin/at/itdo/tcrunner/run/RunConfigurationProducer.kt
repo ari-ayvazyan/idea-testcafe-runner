@@ -1,22 +1,22 @@
 package at.itdo.tcrunner.run
 
-import at.itdo.tcrunner.TestCafeDeclaration
-import at.itdo.tcrunner.TestCafeASTAnalyzer
-import at.itdo.tcrunner.TestCafeFileDetector
+import at.itdo.tcrunner.Declaration
+import at.itdo.tcrunner.ASTAnalyzer
+import at.itdo.tcrunner.FileDetector
 import com.intellij.execution.actions.ConfigurationContext
 import com.intellij.execution.actions.LazyRunConfigurationProducer
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 
-class TestCafeRunConfigurationProducer : LazyRunConfigurationProducer<TestCafeRunConfiguration>() {
+class RunConfigurationProducer : LazyRunConfigurationProducer<RunConfiguration>() {
 
     override fun getConfigurationFactory(): ConfigurationFactory {
-        return TestCafeConfigurationType.INSTANCE.configurationFactories[0]
+        return ConfigurationType.INSTANCE.configurationFactories[0]
     }
 
     override fun isConfigurationFromContext(
-        configuration: TestCafeRunConfiguration,
+        configuration: RunConfiguration,
         context: ConfigurationContext
     ): Boolean {
         val element = context.psiLocation ?: return false
@@ -26,7 +26,7 @@ class TestCafeRunConfigurationProducer : LazyRunConfigurationProducer<TestCafeRu
     }
 
     override fun setupConfigurationFromContext(
-        configuration: TestCafeRunConfiguration,
+        configuration: RunConfiguration,
         context: ConfigurationContext,
         sourceElement: Ref<PsiElement>
     ): Boolean {
@@ -35,13 +35,13 @@ class TestCafeRunConfigurationProducer : LazyRunConfigurationProducer<TestCafeRu
         val virtualFile = containingFile.virtualFile ?: return false
 
         // Check if this is a TestCafe file using the centralized detector
-        val detector = TestCafeFileDetector(context.project)
+        val detector = FileDetector(context.project)
         if (!detector.isTestCafeFile(virtualFile)) {
             return false
         }
 
         // Parse file to find TestCafe declarations
-        val analyzer = TestCafeASTAnalyzer()
+        val analyzer = ASTAnalyzer()
         val declarations = analyzer.findTestCafeDeclarations(containingFile)
 
         // Find the declaration at current position
@@ -50,11 +50,11 @@ class TestCafeRunConfigurationProducer : LazyRunConfigurationProducer<TestCafeRu
         configuration.setScriptPath(virtualFile.path)
 
         when (declaration) {
-            is TestCafeDeclaration.Test -> {
+            is Declaration.Test -> {
                 configuration.setTestFilter(declaration.name)
                 configuration.name = "TestCafe: ${declaration.name}"
             }
-            is TestCafeDeclaration.Fixture -> {
+            is Declaration.Fixture -> {
                 configuration.setFixtureFilter(declaration.name)
                 configuration.name = "TestCafe: ${declaration.name}"
             }
@@ -68,9 +68,9 @@ class TestCafeRunConfigurationProducer : LazyRunConfigurationProducer<TestCafeRu
 
 
     private fun findDeclarationAtPosition(
-        declarations: List<TestCafeDeclaration>,
+        declarations: List<Declaration>,
         element: PsiElement
-    ): TestCafeDeclaration? {
+    ): Declaration? {
         val offset = element.textOffset
         return declarations.find { declaration ->
             offset >= declaration.startOffset && offset <= declaration.endOffset

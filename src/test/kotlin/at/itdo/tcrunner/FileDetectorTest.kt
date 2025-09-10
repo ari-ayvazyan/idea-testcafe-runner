@@ -13,77 +13,77 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertTrue
 import kotlin.test.assertFalse
 
-class TestCafeFileDetectorTest {
+class FileDetectorTest {
 
     private lateinit var project: Project
-    private lateinit var settings: TestCafeSettings
-    private lateinit var detector: TestCafeFileDetector
+    private lateinit var settings: Settings
+    private lateinit var detector: FileDetector
 
     @BeforeEach
     fun setUp() {
         project = mockk<Project>()
-        settings = mockk<TestCafeSettings>()
-        
+        settings = mockk<Settings>()
+
         // Mock the static method TestCafeSettings.getInstance
-        mockkStatic(TestCafeSettings::class)
-        every { TestCafeSettings.getInstance(project) } returns settings
-        
-        detector = TestCafeFileDetector(project)
+        mockkStatic(Settings::class)
+        every { Settings.getInstance(project) } returns settings
+
+        detector = FileDetector(project)
     }
-    
+
     @AfterEach
     fun tearDown() {
-        unmockkStatic(TestCafeSettings::class)
+        unmockkStatic(Settings::class)
     }
 
     @Test
     fun testIsTestCafeFileWithSpecJs() {
         // Setup mock to return default patterns
         every { settings.getFilePatternsAsSet() } returns emptySet()
-        
+
         val virtualFile = mockk<VirtualFile>()
         every { virtualFile.name } returns "example.spec.js"
-        
+
         assertTrue(detector.isTestCafeFile(virtualFile))
     }
 
     @Test
     fun testIsTestCafeFileWithSpecTs() {
         every { settings.getFilePatternsAsSet() } returns emptySet()
-        
+
         val virtualFile = mockk<VirtualFile>()
         every { virtualFile.name } returns "example.spec.ts"
-        
+
         assertTrue(detector.isTestCafeFile(virtualFile))
     }
 
     @Test
     fun testIsTestCafeFileWithTestJs() {
         every { settings.getFilePatternsAsSet() } returns emptySet()
-        
+
         val virtualFile = mockk<VirtualFile>()
         every { virtualFile.name } returns "example.test.js"
-        
+
         assertTrue(detector.isTestCafeFile(virtualFile))
     }
 
     @Test
     fun testIsTestCafeFileWithDashTestTs() {
         every { settings.getFilePatternsAsSet() } returns emptySet()
-        
+
         val virtualFile = mockk<VirtualFile>()
         every { virtualFile.name } returns "example-test.ts"
-        
+
         assertTrue(detector.isTestCafeFile(virtualFile))
     }
 
     @Test
     fun testIsNotTestCafeFile() {
         every { settings.getFilePatternsAsSet() } returns emptySet()
-        
+
         val virtualFile = mockk<VirtualFile>()
         every { virtualFile.name } returns "regular.js"
-        
+
         assertFalse(detector.isTestCafeFile(virtualFile))
     }
 
@@ -137,13 +137,13 @@ class TestCafeFileDetectorTest {
     @Test
     fun testRegexPatternsMatchCorrectFiles() {
         every { settings.getFilePatternsAsSet() } returns emptySet()
-        
+
         // Test various valid TestCafe file names
         val validFiles = listOf(
             "login.spec.js", "HomePage.spec.ts", "user-management.test.js",
             "PAYMENT.TEST.TS", "auth-test.js", "validation-test.ts"
         )
-        
+
         validFiles.forEach { fileName ->
             val virtualFile = mockk<VirtualFile>()
             every { virtualFile.name } returns fileName
@@ -155,7 +155,7 @@ class TestCafeFileDetectorTest {
             "regular.js", "component.tsx", "helper.spec.jsx",
             "test.config.js", "spec-helper.js"
         )
-        
+
         invalidFiles.forEach { fileName ->
             val virtualFile = mockk<VirtualFile>()
             every { virtualFile.name } returns fileName
@@ -167,11 +167,11 @@ class TestCafeFileDetectorTest {
         // Test with custom regex patterns from settings
         val customPatterns = setOf(".*\\.e2e\\.(js|ts)$", ".*\\.integration\\.(js|ts)$")
         every { settings.getFilePatternsAsSet() } returns customPatterns
-        
+
         val validFile = mockk<VirtualFile>()
         every { validFile.name } returns "login.e2e.js"
         assertTrue(detector.isTestCafeFile(validFile))
-        
+
         val invalidFile = mockk<VirtualFile>()
         every { invalidFile.name } returns "login.spec.js"
         assertFalse(detector.isTestCafeFile(invalidFile))
@@ -180,13 +180,13 @@ class TestCafeFileDetectorTest {
     @Test
     fun testPsiFileDetection() {
         every { settings.getFilePatternsAsSet() } returns emptySet()
-        
+
         val virtualFile = mockk<VirtualFile>()
         every { virtualFile.name } returns "test.spec.js"
-        
+
         val psiFile = mockk<PsiFile>()
         every { psiFile.virtualFile } returns virtualFile
-        
+
         assertTrue(detector.isTestCafeFile(psiFile))
     }
 
@@ -194,7 +194,7 @@ class TestCafeFileDetectorTest {
     fun testPsiFileDetectionWithNullVirtualFile() {
         val psiFile = mockk<PsiFile>()
         every { psiFile.virtualFile } returns null
-        
+
         assertFalse(detector.isTestCafeFile(psiFile))
     }
 }

@@ -3,7 +3,7 @@ package at.itdo.tcrunner
 import com.intellij.psi.PsiFile
 import java.util.regex.Pattern
 
-class TestCafeASTAnalyzer {
+class ASTAnalyzer {
 
     companion object {
         private val FIXTURE_PATTERN = Pattern.compile("fixture\\s*\\(\\s*['\"]([^'\"]*)['\"]")
@@ -11,8 +11,8 @@ class TestCafeASTAnalyzer {
         private val PAGE_PATTERN = Pattern.compile("\\.page\\s*\\(\\s*['\"]([^'\"]*)['\"]")
     }
 
-    fun findTestCafeDeclarations(psiFile: PsiFile): List<TestCafeDeclaration> {
-        val declarations = mutableListOf<TestCafeDeclaration>()
+    fun findTestCafeDeclarations(psiFile: PsiFile): List<Declaration> {
+        val declarations = mutableListOf<Declaration>()
         val text = psiFile.text
 
         // Find fixtures
@@ -27,7 +27,7 @@ class TestCafeASTAnalyzer {
 
             val element = psiFile.findElementAt(startOffset) ?: continue
 
-            declarations.add(TestCafeDeclaration.Fixture(
+            declarations.add(Declaration.Fixture(
                 name = name,
                 element = element,
                 startOffset = startOffset,
@@ -45,7 +45,7 @@ class TestCafeASTAnalyzer {
 
             val element = psiFile.findElementAt(startOffset) ?: continue
 
-            declarations.add(TestCafeDeclaration.Test(
+            declarations.add(Declaration.Test(
                 name = name,
                 element = element,
                 startOffset = startOffset,

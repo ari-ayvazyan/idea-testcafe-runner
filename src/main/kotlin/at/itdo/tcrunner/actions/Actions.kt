@@ -1,7 +1,7 @@
 package at.itdo.tcrunner.actions
 
-import at.itdo.tcrunner.TestCafeFileDetector
-import at.itdo.tcrunner.run.TestCafeRunConfigurationUtils
+import at.itdo.tcrunner.FileDetector
+import at.itdo.tcrunner.run.RunConfigurationUtils
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ActionUpdateThread
@@ -14,7 +14,7 @@ abstract class TestCafeBaseAction : AnAction() {
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
     protected fun getTestCafeFiles(project: Project, directory: VirtualFile): List<VirtualFile> {
-        val detector = TestCafeFileDetector(project)
+        val detector = FileDetector(project)
         val testFiles = mutableListOf<VirtualFile>()
 
         fun collectTestFiles(dir: VirtualFile) {
@@ -50,7 +50,7 @@ class RunAllTestsInProjectAction : TestCafeBaseAction() {
 
         testFiles.forEach { file ->
             // Execute entire file using temporary run configuration
-            TestCafeRunConfigurationUtils.executeFileWithTemporaryRunConfiguration(
+            RunConfigurationUtils.executeFileWithTemporaryRunConfiguration(
                 project,
                 file.path,
                 "TestCafe All Tests: ${file.nameWithoutExtension}"
@@ -75,7 +75,7 @@ class RunAllTestsInDirectoryAction : TestCafeBaseAction() {
             if (testFiles.isNotEmpty()) {
                 testFiles.forEach { file ->
                     // Execute entire file using temporary run configuration
-                    TestCafeRunConfigurationUtils.executeFileWithTemporaryRunConfiguration(
+                    RunConfigurationUtils.executeFileWithTemporaryRunConfiguration(
                         project,
                         file.path,
                         "TestCafe Directory: ${file.nameWithoutExtension}"
@@ -91,6 +91,6 @@ class RunAllTestsInDirectoryAction : TestCafeBaseAction() {
         e.presentation.isEnabledAndVisible = project != null &&
             selectedFiles != null &&
             selectedFiles.isNotEmpty() &&
-            selectedFiles.any { it.isDirectory || TestCafeFileDetector(project).isTestCafeFile(it) }
+            selectedFiles.any { it.isDirectory || FileDetector(project).isTestCafeFile(it) }
     }
 }

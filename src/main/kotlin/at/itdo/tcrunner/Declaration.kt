@@ -2,7 +2,7 @@ package at.itdo.tcrunner
 
 import com.intellij.psi.PsiElement
 
-sealed class TestCafeDeclaration(
+sealed class Declaration(
     val name: String,
     val element: PsiElement,
     val startOffset: Int,
@@ -15,7 +15,7 @@ sealed class TestCafeDeclaration(
         startOffset: Int,
         endOffset: Int,
         val page: String? = null
-    ) : TestCafeDeclaration(name, element, startOffset, endOffset)
+    ) : Declaration(name, element, startOffset, endOffset)
 
     class Test(
         name: String,
@@ -23,5 +23,5 @@ sealed class TestCafeDeclaration(
         startOffset: Int,
         endOffset: Int,
         val fixture: String? = null
-    ) : TestCafeDeclaration(name, element, startOffset, endOffset)
+    ) : Declaration(name, element, startOffset, endOffset)
 }

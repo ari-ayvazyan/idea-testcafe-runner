@@ -48,22 +48,22 @@
         <!-- Line marker provider for run buttons -->
         <codeInsight.lineMarkerProvider
             language="JavaScript"
-            implementationClass="at.itdo.tcrunner.TestCafeLineMarkerProvider" />
+            implementationClass="at.itdo.tcrunner.LineMarkerProvider" />
 
         <!-- Settings UI -->
         <projectConfigurable
             parentId="tools"
-            instance="at.itdo.tcrunner.TestCafeSettingsConfigurable"
+            instance="at.itdo.tcrunner.SettingsConfigurable"
             id="at.itdo.tcrunner.settings"
             displayName="TestCafe Runner" />
 
         <!-- Run Configuration -->
         <configurationType
-            implementation="at.itdo.tcrunner.run.TestCafeConfigurationType" />
+            implementation="at.itdo.tcrunner.run.ConfigurationType" />
 
         <!-- Run Configuration Producer -->
         <runConfigurationProducer
-            implementation="at.itdo.tcrunner.run.TestCafeRunConfigurationProducer" />
+            implementation="at.itdo.tcrunner.run.RunConfigurationProducer" />
 
 
     </extensions>
@@ -90,7 +90,7 @@
             </action>
 
             <action id="TestCafe.Settings"
-                    class="at.itdo.tcrunner.actions.TestCafeSettingsAction"
+                    class="at.itdo.tcrunner.actions.SettingsAction"
                     text="TestCafe Runner Settings..."
                     description="Configure TestCafe Runner settings">
             </action>

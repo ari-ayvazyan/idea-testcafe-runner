@@ -1,6 +1,6 @@
 package at.itdo.tcrunner
 
-import at.itdo.tcrunner.run.TestCafeRunConfigurationUtils
+import at.itdo.tcrunner.run.RunConfigurationUtils
 import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.LineMarkerProvider
 import com.intellij.icons.AllIcons
@@ -9,7 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 
-class TestCafeLineMarkerProvider : LineMarkerProvider {
+class LineMarkerProvider : LineMarkerProvider {
 
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
         // Only process leaf elements to avoid performance warnings
@@ -20,7 +20,7 @@ class TestCafeLineMarkerProvider : LineMarkerProvider {
         val psiFile = element.containingFile ?: return null
         val project = element.project
 
-        if (!TestCafeFileDetector(project).isTestCafeFile(psiFile)) {
+        if (!FileDetector(project).isTestCafeFile(psiFile)) {
             return null
         }
 
@@ -29,7 +29,7 @@ class TestCafeLineMarkerProvider : LineMarkerProvider {
             return null
         }
 
-        val analyzer = TestCafeASTAnalyzer()
+        val analyzer = ASTAnalyzer()
         val declarations = analyzer.findTestCafeDeclarations(psiFile)
 
         // Find the declaration that contains this element
@@ -48,7 +48,7 @@ class TestCafeLineMarkerProvider : LineMarkerProvider {
 
     private fun createLineMarkerInfo(
         element: PsiElement,
-        declaration: TestCafeDeclaration,
+        declaration: Declaration,
         psiFile: PsiFile,
         project: Project
     ): LineMarkerInfo<PsiElement> {
@@ -61,17 +61,17 @@ class TestCafeLineMarkerProvider : LineMarkerProvider {
             { _, _ ->
                 // Create and execute temporary run configuration
                 val filePath = psiFile.virtualFile?.path ?: return@LineMarkerInfo
-                TestCafeRunConfigurationUtils.executeWithTemporaryRunConfiguration(project, declaration, filePath)
+                RunConfigurationUtils.executeWithTemporaryRunConfiguration(project, declaration, filePath)
             },
             GutterIconRenderer.Alignment.CENTER,
             { getTooltipText(declaration) }
         )
     }
 
-    private fun getTooltipText(declaration: TestCafeDeclaration): String {
+    private fun getTooltipText(declaration: Declaration): String {
         return when (declaration) {
-            is TestCafeDeclaration.Test -> "Run TestCafe test: '${declaration.name}'"
-            is TestCafeDeclaration.Fixture -> "Run TestCafe fixture: '${declaration.name}'"
+            is Declaration.Test -> "Run TestCafe test: '${declaration.name}'"
+            is Declaration.Fixture -> "Run TestCafe fixture: '${declaration.name}'"
         }
     }
 }

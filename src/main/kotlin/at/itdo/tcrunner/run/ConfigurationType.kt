@@ -5,11 +5,11 @@ import com.intellij.execution.configurations.ConfigurationType
 import com.intellij.icons.AllIcons
 import javax.swing.Icon
 
-class TestCafeConfigurationType : ConfigurationType {
+class ConfigurationType : ConfigurationType {
 
     companion object {
         const val ID = "TestCafeRunConfiguration"
-        val INSTANCE = TestCafeConfigurationType()
+        val INSTANCE = ConfigurationType()
     }
 
     override fun getDisplayName(): String = "TestCafe"
@@ -21,6 +21,6 @@ class TestCafeConfigurationType : ConfigurationType {
     override fun getId(): String = ID
 
     override fun getConfigurationFactories(): Array<ConfigurationFactory> {
-        return arrayOf(TestCafeConfigurationFactory(this))
+        return arrayOf(ConfigurationFactory(this))
     }
 }

@@ -8,11 +8,11 @@ import kotlin.test.assertNull
 
 class TestCafeASTAnalyzerTest {
 
-    private lateinit var analyzer: TestCafeASTAnalyzer
+    private lateinit var analyzer: ASTAnalyzer
 
     @BeforeEach
     fun setUp() {
-        analyzer = TestCafeASTAnalyzer()
+        analyzer = ASTAnalyzer()
     }
 
     @Test
@@ -119,9 +119,9 @@ sealed class MockTestCafeDeclaration(
 }
 
 // Extension method for unit testing
-fun TestCafeASTAnalyzer.parseTestCafeContent(content: String): List<MockTestCafeDeclaration> {
+fun ASTAnalyzer.parseTestCafeContent(content: String): List<MockTestCafeDeclaration> {
     val declarations = mutableListOf<MockTestCafeDeclaration>()
-    
+
     // Use the same patterns from the original class
     val fixturePattern = java.util.regex.Pattern.compile("fixture\\s*\\(\\s*['\"]([^'\"]*)['\"]")
     val testPattern = java.util.regex.Pattern.compile("test\\s*\\(\\s*['\"]([^'\"]*)['\"]")

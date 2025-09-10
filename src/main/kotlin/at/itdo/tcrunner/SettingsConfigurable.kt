@@ -12,9 +12,9 @@ import javax.swing.JPanel
 import javax.swing.JSpinner
 import javax.swing.SpinnerNumberModel
 
-class TestCafeSettingsConfigurable(private val project: Project) : Configurable {
+class SettingsConfigurable(private val project: Project) : Configurable {
 
-    private val settings = TestCafeSettings.getInstance(project)
+    private val settings = Settings.getInstance(project)
 
     // UI Components
     private val defaultCommandField = JBTextField()
@@ -124,7 +124,7 @@ class TestCafeSettingsConfigurable(private val project: Project) : Configurable 
         if (patterns.any { it.isBlank() }) {
             throw ConfigurationException("File patterns cannot contain empty entries", "Invalid File Patterns")
         }
-        
+
         // Validate each pattern is a valid regex
         patterns.forEach { pattern ->
             try {

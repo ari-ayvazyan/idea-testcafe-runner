@@ -3,7 +3,7 @@ package at.itdo.tcrunner.run
 import com.intellij.execution.configurations.RunConfigurationOptions
 import com.intellij.openapi.components.StoredProperty
 
-class TestCafeRunConfigurationOptions : RunConfigurationOptions() {
+class RunConfigurationOptions : RunConfigurationOptions() {
 
     private val scriptPath: StoredProperty<String?> = string("").provideDelegate(this, "scriptPath")
     private val testFilter: StoredProperty<String?> = string("").provideDelegate(this, "testFilter")
