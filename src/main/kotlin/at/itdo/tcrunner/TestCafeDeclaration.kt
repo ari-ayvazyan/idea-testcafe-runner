@@ -1,4 +1,4 @@
-package at.itdo.testcafe
+package at.itdo.tcrunner
 
 import com.intellij.psi.PsiElement
 
@@ -8,7 +8,7 @@ sealed class TestCafeDeclaration(
     val startOffset: Int,
     val endOffset: Int
 ) {
-    
+
     class Fixture(
         name: String,
         element: PsiElement,
@@ -16,7 +16,7 @@ sealed class TestCafeDeclaration(
         endOffset: Int,
         val page: String? = null
     ) : TestCafeDeclaration(name, element, startOffset, endOffset)
-    
+
     class Test(
         name: String,
         element: PsiElement,
