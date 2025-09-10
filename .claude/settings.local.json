@@ -9,7 +9,10 @@
       "Bash(pkill:*)",
       "WebFetch(domain:plugins.jetbrains.com)",
       "WebFetch(domain:github.com)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(npx testcafe:*)",
+      "Bash(npm install)",
+      "WebFetch(domain:intellij-support.jetbrains.com)"
     ],
     "deny": [],
     "ask": []

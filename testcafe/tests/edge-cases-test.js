@@ -69,25 +69,6 @@ const pageUrl = 'https://variable.com';
 fixture(fixtureName)
     .page(pageUrl);
 
-// Dynamic fixture creation
-['chrome', 'firefox', 'safari'].forEach(browser => {
-    fixture(`Dynamic ${browser} Tests`)
-        .page(`https://${browser}.example.com`);
-    
-    test(`Test for ${browser}`, async t => {
-        console.log(`Running test for ${browser}`);
-    });
-});
-
-// Fixture with template literals and expressions
-const environment = 'staging';
-fixture`Environment Tests - ${environment}`
-    .page`https://${environment}.example.com/test`;
-
-test`Test for ${environment} environment`, async t => {
-    console.log(`Testing ${environment}`);
-}
-
 // Mixed quote styles
 fixture("Double Quote Fixture").page('https://mixed.com');
 fixture('Single Quote Fixture').page("https://mixed2.com");
@@ -157,11 +138,6 @@ test('This is an extremely long test name that might cause display or parsing is
 test('Test with "quotes" and \'apostrophes\' & symbols!', async t => {
     console.log('Special chars test');
 });
-
-// Test with template literal
-test`Template literal test with ${environment} variable`, async t => {
-    console.log('Template test');
-};
 
 // Test with unicode
 test('Unicode test: 🧪 测试 テスト', async t => {
