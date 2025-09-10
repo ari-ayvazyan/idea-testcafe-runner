@@ -9,24 +9,19 @@ class TestCafeFileDetector(private val project: Project) {
     private val settings = TestCafeSettings.getInstance(project)
 
     companion object {
-        // Default fallback patterns if settings are not available
+        // Default fallback regex patterns if settings are not available
         private val DEFAULT_PATTERNS = setOf(
-            "*.spec.js", "*.spec.ts", "*.test.js", "*.test.ts", "*-test.js", "*-test.ts"
+            ".*\\.spec\\.(js|ts)$",
+            ".*\\.tests?\\.(js|ts)$",
+            ".*-tests?\\.(js|ts)$"
         )
-    }
-
-    private fun convertGlobToRegex(glob: String): Regex {
-        val escaped = glob
-            .replace(".", "\\.")
-            .replace("*", ".*")
-        return Regex("^$escaped$", RegexOption.IGNORE_CASE)
     }
 
     fun isTestCafeFile(virtualFile: VirtualFile): Boolean {
         val patterns = settings.getFilePatternsAsSet().takeIf { it.isNotEmpty() } ?: DEFAULT_PATTERNS
 
         return patterns.any { pattern ->
-            convertGlobToRegex(pattern).matches(virtualFile.name)
+            Regex(pattern, RegexOption.IGNORE_CASE).matches(virtualFile.name)
         }
     }
 

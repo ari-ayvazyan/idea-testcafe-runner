@@ -49,9 +49,4 @@ Develop an IntelliJ plugin that detects TestCafe fixtures and tests in source fi
 - [x] Integrate with IntelliJ's run configuration system
 
 ### 6. Advanced Features
-- [ ] Implement test result parsing and display
-- [ ] Create test explorer/tree view
-- [ ] Add filtering and search capabilities
-- [ ] Implement test history and favorites
-- [ ] Add support for parallel test execution
-- [ ] Create integration with version control (git annotations)
+- [ ] Display the run configurations as intellij test suites

@@ -2,6 +2,7 @@ package at.itdo.tcrunner.run
 
 import at.itdo.tcrunner.TestCafeDeclaration
 import at.itdo.tcrunner.TestCafeASTAnalyzer
+import at.itdo.tcrunner.TestCafeFileDetector
 import com.intellij.execution.actions.ConfigurationContext
 import com.intellij.execution.actions.LazyRunConfigurationProducer
 import com.intellij.execution.configurations.ConfigurationFactory
@@ -33,8 +34,9 @@ class TestCafeRunConfigurationProducer : LazyRunConfigurationProducer<TestCafeRu
         val containingFile = element.containingFile ?: return false
         val virtualFile = containingFile.virtualFile ?: return false
 
-        // Check if this is a TestCafe file
-        if (!isTestCafeFile(virtualFile.name)) {
+        // Check if this is a TestCafe file using the centralized detector
+        val detector = TestCafeFileDetector(context.project)
+        if (!detector.isTestCafeFile(virtualFile)) {
             return false
         }
 
@@ -64,10 +66,6 @@ class TestCafeRunConfigurationProducer : LazyRunConfigurationProducer<TestCafeRu
         return true
     }
 
-    private fun isTestCafeFile(fileName: String): Boolean {
-        val patterns = listOf(".spec.js", ".spec.ts", ".test.js", ".test.ts", "-test.js", "-test.ts")
-        return patterns.any { fileName.endsWith(it) }
-    }
 
     private fun findDeclarationAtPosition(
         declarations: List<TestCafeDeclaration>,

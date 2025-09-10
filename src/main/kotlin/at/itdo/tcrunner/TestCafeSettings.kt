@@ -19,7 +19,7 @@ class TestCafeSettings : PersistentStateComponent<TestCafeSettings> {
     var browser: String = "chrome"
     var concurrency: Int = 1
     var timeout: Int = 30000
-    var filePatterns: String = "*.spec.js,*.spec.ts,*.test.js,*.test.ts,*-test.js,*-test.ts"
+    var filePatterns: String = ".*\\.spec\\.(js|ts)$,.*\\.test\\.(js|ts)$,.*-test\\.(js|ts)$"
 
     companion object {
         fun getInstance(project: Project): TestCafeSettings {
