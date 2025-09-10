@@ -12,7 +12,9 @@
       "Bash(mkdir:*)",
       "Bash(npx testcafe:*)",
       "Bash(npm install)",
-      "WebFetch(domain:intellij-support.jetbrains.com)"
+      "WebFetch(domain:intellij-support.jetbrains.com)",
+      "Bash(kotlinc:*)",
+      "Bash(java:*)"
     ],
     "deny": [],
     "ask": []

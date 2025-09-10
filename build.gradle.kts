@@ -19,15 +19,18 @@ repositories {
 dependencies {
     intellijPlatform {
         create("IU", "2025.1.4.1")
-        testFramework(org.jetbrains.intellij.platform.gradle.TestFrameworkType.Platform)
         
         // JavaScript plugin for AST parsing
         bundledPlugin("JavaScript")
     }
     
+    // Coroutines - required by IntelliJ Platform
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+    
     // Test dependencies
     testImplementation("io.mockk:mockk:1.13.8")
-    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.1")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 }
 
 intellijPlatform {
@@ -69,7 +72,7 @@ tasks {
     }
     
     test {
-        useJUnit()
+        useJUnitPlatform()
     }
 }
 

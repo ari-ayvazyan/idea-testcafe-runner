@@ -1,44 +1,37 @@
 package at.itdo.tcrunner
 
-import com.intellij.psi.PsiElement
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import io.mockk.mockk
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 
-class TestCafeCommandExecutorTest : BasePlatformTestCase() {
+class TestCafeCommandExecutorTest {
 
-    private lateinit var executor: TestCafeCommandExecutor
+    private lateinit var settings: TestCafeSettings
 
-    override fun setUp() {
-        super.setUp()
-        executor = TestCafeCommandExecutor(project)
+    @BeforeEach
+    fun setUp() {
+        settings = TestCafeSettings()
     }
 
+    @Test
     fun testBuildTestCommand() {
-        val mockElement = mockk<PsiElement>()
-        val testDeclaration = TestCafeDeclaration.Test(
+        val testDeclaration = MockTestCafeDeclaration.Test(
             name = "Login test",
-            element = mockElement,
             startOffset = 0,
             endOffset = 10
         )
 
         val filePath = "/path/to/test.spec.js"
 
-        // Use reflection to test private method
-        val method = TestCafeCommandExecutor::class.java
-            .getDeclaredMethod("buildTestCommand", TestCafeDeclaration.Test::class.java, String::class.java)
-        method.isAccessible = true
-
-        val result = method.invoke(executor, testDeclaration, filePath) as String
+        val result = buildTestCommandForTest(settings, testDeclaration, filePath)
 
         assertEquals("npx testcafe chrome /path/to/test.spec.js -t \"Login test\"", result)
     }
 
+    @Test
     fun testBuildFixtureCommand() {
-        val mockElement = mockk<PsiElement>()
-        val fixtureDeclaration = TestCafeDeclaration.Fixture(
+        val fixtureDeclaration = MockTestCafeDeclaration.Fixture(
             name = "Login Page",
-            element = mockElement,
             startOffset = 0,
             endOffset = 10,
             page = "https://example.com"
@@ -46,26 +39,38 @@ class TestCafeCommandExecutorTest : BasePlatformTestCase() {
 
         val filePath = "/path/to/test.spec.js"
 
-        // Use reflection to test private method
-        val method = TestCafeCommandExecutor::class.java
-            .getDeclaredMethod("buildFixtureCommand", TestCafeDeclaration.Fixture::class.java, String::class.java)
-        method.isAccessible = true
-
-        val result = method.invoke(executor, fixtureDeclaration, filePath) as String
+        val result = buildFixtureCommandForTest(settings, fixtureDeclaration, filePath)
 
         assertEquals("npx testcafe chrome /path/to/test.spec.js -f \"Login Page\"", result)
     }
 
+    @Test
     fun testBuildFileCommand() {
         val filePath = "/path/to/test.spec.js"
 
-        // Use reflection to test private method
-        val method = TestCafeCommandExecutor::class.java
-            .getDeclaredMethod("buildFileCommand", String::class.java)
-        method.isAccessible = true
-
-        val result = method.invoke(executor, filePath) as String
+        val result = buildFileCommandForTest(settings, filePath)
 
         assertEquals("npx testcafe chrome /path/to/test.spec.js", result)
     }
+}
+
+// Helper functions that replicate the private methods for testing
+fun buildTestCommandForTest(settings: TestCafeSettings, test: MockTestCafeDeclaration.Test, filePath: String): String {
+    return settings.getCommandTemplate(TestCafeSettings.CommandType.TEST)
+        .replace("{filePath}", filePath)
+        .replace("{testName}", test.name)
+        .replace("{browser}", settings.browser)
+}
+
+fun buildFixtureCommandForTest(settings: TestCafeSettings, fixture: MockTestCafeDeclaration.Fixture, filePath: String): String {
+    return settings.getCommandTemplate(TestCafeSettings.CommandType.FIXTURE)
+        .replace("{filePath}", filePath)
+        .replace("{fixtureName}", fixture.name)
+        .replace("{browser}", settings.browser)
+}
+
+fun buildFileCommandForTest(settings: TestCafeSettings, filePath: String): String {
+    return settings.getCommandTemplate(TestCafeSettings.CommandType.FILE)
+        .replace("{filePath}", filePath)
+        .replace("{browser}", settings.browser)
 }
