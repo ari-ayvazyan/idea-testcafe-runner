@@ -1,35 +1,35 @@
 package at.itdo.tcrunner.run
 
-import at.itdo.tcrunner.TestCafeDeclaration
+import at.itdo.tcrunner.Declaration
 import com.intellij.execution.ProgramRunnerUtil
 import com.intellij.execution.RunManager
 import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder
 import com.intellij.openapi.project.Project
 
-object TestCafeRunConfigurationUtils {
+object RunConfigurationUtils {
 
     fun executeWithTemporaryRunConfiguration(
         project: Project,
-        declaration: TestCafeDeclaration,
+        declaration: Declaration,
         filePath: String
     ) {
         val runManager = RunManager.getInstance(project)
-        val configurationType = TestCafeConfigurationType.INSTANCE
+        val configurationType = ConfigurationType.INSTANCE
         val factory = configurationType.configurationFactories[0]
 
         // Create a temporary run configuration
-        val runConfiguration = factory.createTemplateConfiguration(project) as TestCafeRunConfiguration
+        val runConfiguration = factory.createTemplateConfiguration(project) as RunConfiguration
 
         // Set configuration based on declaration type
         runConfiguration.setScriptPath(filePath)
 
         when (declaration) {
-            is TestCafeDeclaration.Test -> {
+            is Declaration.Test -> {
                 runConfiguration.setTestFilter(declaration.name)
                 runConfiguration.name = "TestCafe Test: ${declaration.name}"
             }
-            is TestCafeDeclaration.Fixture -> {
+            is Declaration.Fixture -> {
                 runConfiguration.setFixtureFilter(declaration.name)
                 runConfiguration.name = "TestCafe Fixture: ${declaration.name}"
             }
@@ -56,11 +56,11 @@ object TestCafeRunConfigurationUtils {
         configurationName: String? = null
     ) {
         val runManager = RunManager.getInstance(project)
-        val configurationType = TestCafeConfigurationType.INSTANCE
+        val configurationType = ConfigurationType.INSTANCE
         val factory = configurationType.configurationFactories[0]
 
         // Create a temporary run configuration
-        val runConfiguration = factory.createTemplateConfiguration(project) as TestCafeRunConfiguration
+        val runConfiguration = factory.createTemplateConfiguration(project) as RunConfiguration
 
         // Set configuration for entire file execution
         runConfiguration.setScriptPath(filePath)

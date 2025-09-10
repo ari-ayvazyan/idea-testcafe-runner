@@ -5,13 +5,13 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-class TestCafeSettingsTest {
+class SettingsTest {
 
-    private lateinit var settings: TestCafeSettings
+    private lateinit var settings: Settings
 
     @BeforeEach
     fun setUp() {
-        settings = TestCafeSettings()
+        settings = Settings()
     }
 
     @Test
@@ -30,25 +30,25 @@ class TestCafeSettingsTest {
     fun testGetCommandTemplate() {
         assertEquals(
             settings.defaultCommand,
-            settings.getCommandTemplate(TestCafeSettings.CommandType.FILE)
+            settings.getCommandTemplate(Settings.CommandType.FILE)
         )
         assertEquals(
             settings.testCommand,
-            settings.getCommandTemplate(TestCafeSettings.CommandType.TEST)
+            settings.getCommandTemplate(Settings.CommandType.TEST)
         )
         assertEquals(
             settings.fixtureCommand,
-            settings.getCommandTemplate(TestCafeSettings.CommandType.FIXTURE)
+            settings.getCommandTemplate(Settings.CommandType.FIXTURE)
         )
     }
 
     @Test
     fun testSetCommandTemplate() {
         val newFileCommand = "yarn testcafe firefox {filePath}"
-        settings.setCommandTemplate(TestCafeSettings.CommandType.FILE, newFileCommand)
+        settings.setCommandTemplate(Settings.CommandType.FILE, newFileCommand)
 
         assertEquals(newFileCommand, settings.defaultCommand)
-        assertEquals(newFileCommand, settings.getCommandTemplate(TestCafeSettings.CommandType.FILE))
+        assertEquals(newFileCommand, settings.getCommandTemplate(Settings.CommandType.FILE))
     }
 
     @Test
@@ -63,7 +63,7 @@ class TestCafeSettingsTest {
         assertEquals(true, state.headlessMode)
         assertEquals(4, state.concurrency)
 
-        val newSettings = TestCafeSettings()
+        val newSettings = Settings()
         newSettings.loadState(state)
 
         assertEquals("firefox", newSettings.browser)

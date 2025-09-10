@@ -6,7 +6,7 @@ import com.intellij.execution.configurations.RunConfiguration
 import com.intellij.openapi.components.BaseState
 import com.intellij.openapi.project.Project
 
-class TestCafeConfigurationFactory(type: ConfigurationType) : ConfigurationFactory(type) {
+class ConfigurationFactory(type: ConfigurationType) : ConfigurationFactory(type) {
 
     companion object {
         const val FACTORY_NAME = "TestCafe"
@@ -15,10 +15,10 @@ class TestCafeConfigurationFactory(type: ConfigurationType) : ConfigurationFacto
     override fun getId(): String = FACTORY_NAME
 
     override fun createTemplateConfiguration(project: Project): RunConfiguration {
-        return TestCafeRunConfiguration(project, this, "TestCafe")
+        return RunConfiguration(project, this, "TestCafe")
     }
 
     override fun getName(): String = FACTORY_NAME
 
-    override fun getOptionsClass(): Class<out BaseState>? = TestCafeRunConfigurationOptions::class.java
+    override fun getOptionsClass(): Class<out BaseState>? = RunConfigurationOptions::class.java
 }

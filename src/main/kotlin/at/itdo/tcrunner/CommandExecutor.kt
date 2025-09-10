@@ -14,12 +14,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.icons.AllIcons
 import java.io.File
 
-class TestCafeCommandExecutor(private val project: Project) {
+class CommandExecutor(private val project: Project) {
 
-    fun executeTest(declaration: TestCafeDeclaration, filePath: String) {
+    fun executeTest(declaration: Declaration, filePath: String) {
         val command = when (declaration) {
-            is TestCafeDeclaration.Test -> buildTestCommand(declaration, filePath)
-            is TestCafeDeclaration.Fixture -> buildFixtureCommand(declaration, filePath)
+            is Declaration.Test -> buildTestCommand(declaration, filePath)
+            is Declaration.Fixture -> buildFixtureCommand(declaration, filePath)
         }
 
         executeCommand(command, File(filePath).parentFile)
@@ -30,25 +30,25 @@ class TestCafeCommandExecutor(private val project: Project) {
         executeCommand(command, File(filePath).parentFile)
     }
 
-    private fun buildTestCommand(test: TestCafeDeclaration.Test, filePath: String): String {
-        val settings = TestCafeSettings.getInstance(project)
-        return settings.getCommandTemplate(TestCafeSettings.CommandType.TEST)
+    private fun buildTestCommand(test: Declaration.Test, filePath: String): String {
+        val settings = Settings.getInstance(project)
+        return settings.getCommandTemplate(Settings.CommandType.TEST)
             .replace("{filePath}", filePath)
             .replace("{testName}", test.name)
             .replace("{browser}", settings.browser)
     }
 
-    private fun buildFixtureCommand(fixture: TestCafeDeclaration.Fixture, filePath: String): String {
-        val settings = TestCafeSettings.getInstance(project)
-        return settings.getCommandTemplate(TestCafeSettings.CommandType.FIXTURE)
+    private fun buildFixtureCommand(fixture: Declaration.Fixture, filePath: String): String {
+        val settings = Settings.getInstance(project)
+        return settings.getCommandTemplate(Settings.CommandType.FIXTURE)
             .replace("{filePath}", filePath)
             .replace("{fixtureName}", fixture.name)
             .replace("{browser}", settings.browser)
     }
 
     private fun buildFileCommand(filePath: String): String {
-        val settings = TestCafeSettings.getInstance(project)
-        return settings.getCommandTemplate(TestCafeSettings.CommandType.FILE)
+        val settings = Settings.getInstance(project)
+        return settings.getCommandTemplate(Settings.CommandType.FILE)
             .replace("{filePath}", filePath)
             .replace("{browser}", settings.browser)
     }

@@ -6,11 +6,11 @@ import kotlin.test.assertEquals
 
 class TestCafeCommandExecutorTest {
 
-    private lateinit var settings: TestCafeSettings
+    private lateinit var settings: Settings
 
     @BeforeEach
     fun setUp() {
-        settings = TestCafeSettings()
+        settings = Settings()
     }
 
     @Test
@@ -55,22 +55,22 @@ class TestCafeCommandExecutorTest {
 }
 
 // Helper functions that replicate the private methods for testing
-fun buildTestCommandForTest(settings: TestCafeSettings, test: MockTestCafeDeclaration.Test, filePath: String): String {
-    return settings.getCommandTemplate(TestCafeSettings.CommandType.TEST)
+fun buildTestCommandForTest(settings: Settings, test: MockTestCafeDeclaration.Test, filePath: String): String {
+    return settings.getCommandTemplate(Settings.CommandType.TEST)
         .replace("{filePath}", filePath)
         .replace("{testName}", test.name)
         .replace("{browser}", settings.browser)
 }
 
-fun buildFixtureCommandForTest(settings: TestCafeSettings, fixture: MockTestCafeDeclaration.Fixture, filePath: String): String {
-    return settings.getCommandTemplate(TestCafeSettings.CommandType.FIXTURE)
+fun buildFixtureCommandForTest(settings: Settings, fixture: MockTestCafeDeclaration.Fixture, filePath: String): String {
+    return settings.getCommandTemplate(Settings.CommandType.FIXTURE)
         .replace("{filePath}", filePath)
         .replace("{fixtureName}", fixture.name)
         .replace("{browser}", settings.browser)
 }
 
-fun buildFileCommandForTest(settings: TestCafeSettings, filePath: String): String {
-    return settings.getCommandTemplate(TestCafeSettings.CommandType.FILE)
+fun buildFileCommandForTest(settings: Settings, filePath: String): String {
+    return settings.getCommandTemplate(Settings.CommandType.FILE)
         .replace("{filePath}", filePath)
         .replace("{browser}", settings.browser)
 }

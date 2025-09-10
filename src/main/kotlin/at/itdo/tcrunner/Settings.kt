@@ -9,7 +9,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
     name = "TestCafeSettings",
     storages = [Storage("testcafe-runner.xml")]
 )
-class TestCafeSettings : PersistentStateComponent<TestCafeSettings> {
+class Settings : PersistentStateComponent<Settings> {
 
     var defaultCommand: String = "npx testcafe {browser} {filePath}"
     var testCommand: String = "npx testcafe {browser} {filePath} -t \"{testName}\""
@@ -22,14 +22,14 @@ class TestCafeSettings : PersistentStateComponent<TestCafeSettings> {
     var filePatterns: String = ".*\\.spec\\.(js|ts)$,.*\\.test\\.(js|ts)$,.*-test\\.(js|ts)$"
 
     companion object {
-        fun getInstance(project: Project): TestCafeSettings {
-            return project.service<TestCafeSettings>()
+        fun getInstance(project: Project): Settings {
+            return project.service<Settings>()
         }
     }
 
-    override fun getState(): TestCafeSettings = this
+    override fun getState(): Settings = this
 
-    override fun loadState(state: TestCafeSettings) {
+    override fun loadState(state: Settings) {
         XmlSerializerUtil.copyBean(state, this)
     }
 

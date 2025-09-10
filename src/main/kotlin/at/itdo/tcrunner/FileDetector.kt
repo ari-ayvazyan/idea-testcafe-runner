@@ -4,9 +4,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 
-class TestCafeFileDetector(private val project: Project) {
+class FileDetector(private val project: Project) {
 
-    private val settings = TestCafeSettings.getInstance(project)
+    private val settings = Settings.getInstance(project)
 
     companion object {
         // Default fallback regex patterns if settings are not available
