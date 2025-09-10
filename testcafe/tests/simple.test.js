@@ -6,3 +6,7 @@ fixture('Sample Test')
 test('Simple test with console log', async t => {
     console.log('Hello from TestCafe!');
 });
+
+test('Simple test 2 with console log', async t => {
+    console.log('Hello from TestCafe!');
+});
