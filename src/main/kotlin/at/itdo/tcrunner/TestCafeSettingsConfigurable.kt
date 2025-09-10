@@ -47,8 +47,8 @@ class TestCafeSettingsConfigurable(private val project: Project) : Configurable 
             .addLabeledComponent(JBLabel("Timeout (ms):"), timeoutSpinner, 1, false)
             .addTooltip("Test execution timeout in milliseconds")
             .addSeparator()
-            .addLabeledComponent(JBLabel("File patterns:"), filePatternsField, 1, false)
-            .addTooltip("Comma-separated file patterns to detect TestCafe files (e.g., *.spec.js,*.test.ts)")
+            .addLabeledComponent(JBLabel("File regex patterns:"), filePatternsField, 1, false)
+            .addTooltip("Comma-separated regex patterns to detect TestCafe files (e.g., .*\\.spec\\.(js|ts)$,.*\\.test\\.(js|ts)$)")
             .addComponentFillVertically(JPanel(), 0)
             .panel
     }
@@ -119,10 +119,19 @@ class TestCafeSettingsConfigurable(private val project: Project) : Configurable 
             throw ConfigurationException("File patterns cannot be empty", "Invalid File Patterns")
         }
 
-        // Validate file patterns format
+        // Validate file patterns format and regex validity
         val patterns = filePatternsField.text.split(",").map { it.trim() }
         if (patterns.any { it.isBlank() }) {
             throw ConfigurationException("File patterns cannot contain empty entries", "Invalid File Patterns")
+        }
+        
+        // Validate each pattern is a valid regex
+        patterns.forEach { pattern ->
+            try {
+                Regex(pattern)
+            } catch (e: Exception) {
+                throw ConfigurationException("Invalid regex pattern: '$pattern'. ${e.message}", "Invalid Regex Pattern")
+            }
         }
     }
 

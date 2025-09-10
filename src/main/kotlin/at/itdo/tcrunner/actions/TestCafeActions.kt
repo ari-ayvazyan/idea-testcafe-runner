@@ -4,11 +4,14 @@ import at.itdo.tcrunner.TestCafeFileDetector
 import at.itdo.tcrunner.run.TestCafeRunConfigurationUtils
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 
 abstract class TestCafeBaseAction : AnAction() {
+
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
     protected fun getTestCafeFiles(project: Project, directory: VirtualFile): List<VirtualFile> {
         val detector = TestCafeFileDetector(project)
@@ -38,7 +41,7 @@ class RunAllTestsInProjectAction : TestCafeBaseAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        val projectDir = project.baseDir ?: return
+        val projectDir = project.projectFile?.parent ?: return
 
         val testFiles = getTestCafeFiles(project, projectDir)
         if (testFiles.isEmpty()) {
