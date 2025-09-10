@@ -43,13 +43,15 @@ class TestCafeRunProfileState(
 
     private fun buildTestCafeCommand(settings: TestCafeSettings): String {
         // Get custom command or determine appropriate default template
-        val command = if (configuration.getCustomCommand().isNotBlank()) {
-            configuration.getCustomCommand()
-        } else {
+        val command = configuration.getCustomCommand().ifBlank {
             // Determine command type and get appropriate template from settings
             when {
-                configuration.getTestFilter().isNotBlank() -> settings.getCommandTemplate(TestCafeSettings.CommandType.TEST)
-                configuration.getFixtureFilter().isNotBlank() -> settings.getCommandTemplate(TestCafeSettings.CommandType.FIXTURE)
+                configuration.getTestFilter()
+                    .isNotBlank() -> settings.getCommandTemplate(TestCafeSettings.CommandType.TEST)
+
+                configuration.getFixtureFilter()
+                    .isNotBlank() -> settings.getCommandTemplate(TestCafeSettings.CommandType.FIXTURE)
+
                 else -> settings.getCommandTemplate(TestCafeSettings.CommandType.FILE)
             }
         }
@@ -59,11 +61,17 @@ class TestCafeRunProfileState(
     }
 
     private fun replaceVariables(command: String): String {
+        // Build browser string with headless mode if enabled
+        var browser = configuration.getBrowser()
+        if (configuration.getHeadlessMode() && !browser.contains(":headless")) {
+            browser += ":headless"
+        }
+
         return command
             .replace("{filePath}", configuration.getScriptPath())
             .replace("{testName}", configuration.getTestFilter())
             .replace("{fixtureName}", configuration.getFixtureFilter())
-            .replace("{browser}", configuration.getBrowser())
+            .replace("{browser}", browser)
             .replace("{workingDirectory}", configuration.getWorkingDirectory())
     }
 }

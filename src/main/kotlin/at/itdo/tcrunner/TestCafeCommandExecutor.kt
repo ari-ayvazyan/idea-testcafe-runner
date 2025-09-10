@@ -16,12 +16,6 @@ import java.io.File
 
 class TestCafeCommandExecutor(private val project: Project) {
 
-    companion object {
-        const val DEFAULT_COMMAND_TEMPLATE = "npx testcafe chrome {filePath}"
-        const val TEST_FILTER_TEMPLATE = "npx testcafe chrome {filePath} -t \"{testName}\""
-        const val FIXTURE_FILTER_TEMPLATE = "npx testcafe chrome {filePath} -f \"{fixtureName}\""
-    }
-
     fun executeTest(declaration: TestCafeDeclaration, filePath: String) {
         val command = when (declaration) {
             is TestCafeDeclaration.Test -> buildTestCommand(declaration, filePath)
@@ -37,20 +31,26 @@ class TestCafeCommandExecutor(private val project: Project) {
     }
 
     private fun buildTestCommand(test: TestCafeDeclaration.Test, filePath: String): String {
-        return TEST_FILTER_TEMPLATE
+        val settings = TestCafeSettings.getInstance(project)
+        return settings.getCommandTemplate(TestCafeSettings.CommandType.TEST)
             .replace("{filePath}", filePath)
             .replace("{testName}", test.name)
+            .replace("{browser}", settings.browser)
     }
 
     private fun buildFixtureCommand(fixture: TestCafeDeclaration.Fixture, filePath: String): String {
-        return FIXTURE_FILTER_TEMPLATE
+        val settings = TestCafeSettings.getInstance(project)
+        return settings.getCommandTemplate(TestCafeSettings.CommandType.FIXTURE)
             .replace("{filePath}", filePath)
             .replace("{fixtureName}", fixture.name)
+            .replace("{browser}", settings.browser)
     }
 
     private fun buildFileCommand(filePath: String): String {
-        return DEFAULT_COMMAND_TEMPLATE
+        val settings = TestCafeSettings.getInstance(project)
+        return settings.getCommandTemplate(TestCafeSettings.CommandType.FILE)
             .replace("{filePath}", filePath)
+            .replace("{browser}", settings.browser)
     }
 
     private fun executeCommand(command: String, workingDirectory: File?) {

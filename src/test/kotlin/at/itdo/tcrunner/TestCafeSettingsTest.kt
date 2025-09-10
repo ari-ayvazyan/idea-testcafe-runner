@@ -1,20 +1,24 @@
 package at.itdo.tcrunner
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
-class TestCafeSettingsTest : BasePlatformTestCase() {
+class TestCafeSettingsTest {
 
     private lateinit var settings: TestCafeSettings
 
-    override fun setUp() {
-        super.setUp()
-        settings = TestCafeSettings.getInstance(project)
+    @BeforeEach
+    fun setUp() {
+        settings = TestCafeSettings()
     }
 
+    @Test
     fun testDefaultValues() {
-        assertEquals("npx testcafe chrome {filePath}", settings.defaultCommand)
-        assertEquals("npx testcafe chrome {filePath} -t \"{testName}\"", settings.testCommand)
-        assertEquals("npx testcafe chrome {filePath} -f \"{fixtureName}\"", settings.fixtureCommand)
+        assertEquals("npx testcafe {browser} {filePath}", settings.defaultCommand)
+        assertEquals("npx testcafe {browser} {filePath} -t \"{testName}\"", settings.testCommand)
+        assertEquals("npx testcafe {browser} {filePath} -f \"{fixtureName}\"", settings.fixtureCommand)
         assertEquals(false, settings.headlessMode)
         assertEquals(false, settings.liveMode)
         assertEquals("chrome", settings.browser)
@@ -22,6 +26,7 @@ class TestCafeSettingsTest : BasePlatformTestCase() {
         assertEquals(30000, settings.timeout)
     }
 
+    @Test
     fun testGetCommandTemplate() {
         assertEquals(
             settings.defaultCommand,
@@ -37,6 +42,7 @@ class TestCafeSettingsTest : BasePlatformTestCase() {
         )
     }
 
+    @Test
     fun testSetCommandTemplate() {
         val newFileCommand = "yarn testcafe firefox {filePath}"
         settings.setCommandTemplate(TestCafeSettings.CommandType.FILE, newFileCommand)
@@ -45,6 +51,7 @@ class TestCafeSettingsTest : BasePlatformTestCase() {
         assertEquals(newFileCommand, settings.getCommandTemplate(TestCafeSettings.CommandType.FILE))
     }
 
+    @Test
     fun testStateManagement() {
         settings.browser = "firefox"
         settings.headlessMode = true

@@ -11,9 +11,9 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 )
 class TestCafeSettings : PersistentStateComponent<TestCafeSettings> {
 
-    var defaultCommand: String = "npx testcafe chrome {filePath}"
-    var testCommand: String = "npx testcafe chrome {filePath} -t \"{testName}\""
-    var fixtureCommand: String = "npx testcafe chrome {filePath} -f \"{fixtureName}\""
+    var defaultCommand: String = "npx testcafe {browser} {filePath}"
+    var testCommand: String = "npx testcafe {browser} {filePath} -t \"{testName}\""
+    var fixtureCommand: String = "npx testcafe {browser} {filePath} -f \"{fixtureName}\""
     var headlessMode: Boolean = false
     var liveMode: Boolean = false
     var browser: String = "chrome"
