@@ -32,7 +32,7 @@ test("Double quote test name", async t => {
 // Fixture with complex multiline setup
 fixture('Complex Multiline Integration')
     .page(
-        process.env.NODE_ENV === 'production' 
+        process.env.NODE_ENV === 'production'
             ? 'https://prod.example.com'
             : 'https://staging.example.com'
     )
@@ -49,6 +49,6 @@ fixture('Complex Multiline Integration')
 test('Multiline test with environment detection', async t => {
     const env = t.fixtureCtx.sharedData.environment;
     console.log(`Testing in environment: ${env}`);
-    
+
     await t.expect(Selector('body').exists).ok();
 });
