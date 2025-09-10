@@ -1,9 +1,7 @@
-package at.itdo.testcafe.run
+package at.itdo.tcrunner.run
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.SettingsEditor
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.components.JBCheckBox
@@ -13,7 +11,7 @@ import javax.swing.JComponent
 import javax.swing.JPanel
 
 class TestCafeRunConfigurationEditor : SettingsEditor<TestCafeRunConfiguration>() {
-    
+
     private val scriptPathField = TextFieldWithBrowseButton()
     private val testFilterField = JBTextField()
     private val fixtureFilterField = JBTextField()
@@ -22,7 +20,7 @@ class TestCafeRunConfigurationEditor : SettingsEditor<TestCafeRunConfiguration>(
     private val liveModeBox = JBCheckBox("Live mode")
     private val customCommandField = JBTextField()
     private val workingDirectoryField = TextFieldWithBrowseButton()
-    
+
     override fun createEditor(): JComponent {
         // Setup file chooser for script path
         scriptPathField.addBrowseFolderListener(
@@ -32,7 +30,7 @@ class TestCafeRunConfigurationEditor : SettingsEditor<TestCafeRunConfiguration>(
                     .withDescription("Choose TestCafe test file")
             )
         )
-        
+
         // Setup directory chooser for working directory
         workingDirectoryField.addBrowseFolderListener(
             TextBrowseFolderListener(
@@ -41,10 +39,10 @@ class TestCafeRunConfigurationEditor : SettingsEditor<TestCafeRunConfiguration>(
                     .withDescription("Choose working directory for TestCafe execution")
             )
         )
-        
+
         // Set default browser
         browserField.text = "chrome"
-        
+
         return FormBuilder.createFormBuilder()
             .addLabeledComponent("Script path:", scriptPathField)
             .addLabeledComponent("Test filter:", testFilterField)
@@ -57,7 +55,7 @@ class TestCafeRunConfigurationEditor : SettingsEditor<TestCafeRunConfiguration>(
             .addComponentFillVertically(JPanel(), 0)
             .panel
     }
-    
+
     override fun resetEditorFrom(configuration: TestCafeRunConfiguration) {
         scriptPathField.text = configuration.getScriptPath()
         testFilterField.text = configuration.getTestFilter()
@@ -68,7 +66,7 @@ class TestCafeRunConfigurationEditor : SettingsEditor<TestCafeRunConfiguration>(
         customCommandField.text = configuration.getCustomCommand()
         workingDirectoryField.text = configuration.getWorkingDirectory()
     }
-    
+
     override fun applyEditorTo(configuration: TestCafeRunConfiguration) {
         configuration.setScriptPath(scriptPathField.text)
         configuration.setTestFilter(testFilterField.text)

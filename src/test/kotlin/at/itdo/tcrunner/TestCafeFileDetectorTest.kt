@@ -1,4 +1,4 @@
-package at.itdo.testcafe
+package at.itdo.tcrunner
 
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
@@ -7,49 +7,49 @@ import io.mockk.every
 import io.mockk.mockk
 
 class TestCafeFileDetectorTest : BasePlatformTestCase() {
-    
+
     private lateinit var detector: TestCafeFileDetector
-    
+
     override fun setUp() {
         super.setUp()
         detector = TestCafeFileDetector(project)
     }
-    
+
     fun testIsTestCafeFileWithSpecJs() {
         val virtualFile = mockk<VirtualFile>()
         every { virtualFile.name } returns "example.spec.js"
-        
+
         assertTrue(detector.isTestCafeFile(virtualFile))
     }
-    
+
     fun testIsTestCafeFileWithSpecTs() {
         val virtualFile = mockk<VirtualFile>()
         every { virtualFile.name } returns "example.spec.ts"
-        
+
         assertTrue(detector.isTestCafeFile(virtualFile))
     }
-    
+
     fun testIsTestCafeFileWithTestJs() {
         val virtualFile = mockk<VirtualFile>()
         every { virtualFile.name } returns "example.test.js"
-        
+
         assertTrue(detector.isTestCafeFile(virtualFile))
     }
-    
+
     fun testIsTestCafeFileWithDashTestTs() {
         val virtualFile = mockk<VirtualFile>()
         every { virtualFile.name } returns "example-test.ts"
-        
+
         assertTrue(detector.isTestCafeFile(virtualFile))
     }
-    
+
     fun testIsNotTestCafeFile() {
         val virtualFile = mockk<VirtualFile>()
         every { virtualFile.name } returns "regular.js"
-        
+
         assertFalse(detector.isTestCafeFile(virtualFile))
     }
-    
+
     fun testHasTestCafeContentWithFixture() {
         val psiFile = mockk<PsiFile>()
         every { psiFile.text } returns """
@@ -62,10 +62,10 @@ class TestCafeFileDetectorTest : BasePlatformTestCase() {
                 // test implementation
             });
         """.trimIndent()
-        
+
         assertTrue(detector.hasTestCafeContent(psiFile))
     }
-    
+
     fun testHasTestCafeContentWithTest() {
         val psiFile = mockk<PsiFile>()
         every { psiFile.text } returns """
@@ -73,10 +73,10 @@ class TestCafeFileDetectorTest : BasePlatformTestCase() {
                 // test implementation
             });
         """.trimIndent()
-        
+
         assertTrue(detector.hasTestCafeContent(psiFile))
     }
-    
+
     fun testHasNoTestCafeContent() {
         val psiFile = mockk<PsiFile>()
         every { psiFile.text } returns """
@@ -84,7 +84,7 @@ class TestCafeFileDetectorTest : BasePlatformTestCase() {
                 console.log('Not a TestCafe file');
             }
         """.trimIndent()
-        
+
         assertFalse(detector.hasTestCafeContent(psiFile))
     }
 }
