@@ -14,7 +14,9 @@
       "Bash(npm install)",
       "WebFetch(domain:intellij-support.jetbrains.com)",
       "Bash(kotlinc:*)",
-      "Bash(java:*)"
+      "Bash(java:*)",
+      "Bash(npm run test:*)",
+      "WebFetch(domain:javadoc.jetbrains.net)"
     ],
     "deny": [],
     "ask": []
