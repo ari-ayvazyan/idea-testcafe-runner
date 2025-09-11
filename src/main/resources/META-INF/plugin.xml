@@ -65,7 +65,6 @@
         <runConfigurationProducer
             implementation="at.itdo.tcrunner.run.RunConfigurationProducer" />
 
-
     </extensions>
 
     <!-- Actions -->
