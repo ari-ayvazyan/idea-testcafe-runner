@@ -10,3 +10,7 @@ test('Simple test with console log', async t => {
 test('Simple test 2 with console log', async t => {
     console.log('Hello from TestCafe!');
 });
+
+test('Simple test 3 with err', async t => {
+    t.expect(false).ok()
+});
