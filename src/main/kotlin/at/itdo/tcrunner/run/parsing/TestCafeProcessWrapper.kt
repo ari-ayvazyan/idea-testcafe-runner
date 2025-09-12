@@ -55,13 +55,6 @@ private class TestCafeOutputListener(
         }
     }
 
-    override fun processTerminated(event: ProcessEvent) {
-        currentProcessEvent = event
-        if (::parser.isInitialized) {
-            parser.processCompleteOutput()
-        }
-    }
-
     private fun emitServiceMessage(message: String) {
         isProcessingServiceMessage = true
         try {
