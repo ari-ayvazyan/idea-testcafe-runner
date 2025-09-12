@@ -4,13 +4,14 @@ fixture('Sample Test')
     .page('https://example.com');
 
 test('Simple test with console log', async t => {
-    console.log('Hello from TestCafe!');
+    console.log('This message belongs to Simple test 1!');
 });
 
 test('Simple test 2 with console log', async t => {
-    console.log('Hello from TestCafe!');
+    console.log('This message belongs to Simple test 2!');
 });
 
 test('Simple test 3 with err', async t => {
-    t.expect(false).ok()
+  console.log('This message belongs to Simple test 3!');
+  t.expect(false).ok()
 });
