@@ -2,11 +2,14 @@ package at.itdo.tcrunner.run
 
 import at.itdo.tcrunner.Settings
 import com.intellij.execution.ExecutionException
+import com.intellij.execution.ExecutionResult
+import com.intellij.execution.Executor
 import com.intellij.execution.configurations.CommandLineState
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.ProcessHandler
-import com.intellij.execution.process.ProcessHandlerFactory
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.execution.runners.ProgramRunner
+import com.intellij.execution.testframework.sm.SMTestRunnerConnectionUtil
 import java.io.File
 
 class RunProfileState(
@@ -17,7 +20,28 @@ class RunProfileState(
     @Throws(ExecutionException::class)
     override fun startProcess(): ProcessHandler {
         val commandLine = createCommandLine()
-        return ProcessHandlerFactory.getInstance().createColoredProcessHandler(commandLine)
+        
+        // Create process and wrap it with TestCafe service message handler
+        val process = commandLine.createProcess()
+        return TestCafeProcessWrapper.createProcessHandler(
+            process, 
+            commandLine.commandLineString,
+            configuration.getScriptPath()
+        )
+    }
+
+    override fun execute(executor: Executor, runner: ProgramRunner<*>): ExecutionResult {
+        val processHandler = startProcess()
+        
+        // Create SM Test Runner console with proper properties  
+        val properties = TestCafeTestConsoleProperties(configuration, executor)
+        val consoleView = SMTestRunnerConnectionUtil.createAndAttachConsole(
+            "TestCafe",
+            processHandler,
+            properties
+        )
+        
+        return com.intellij.execution.DefaultExecutionResult(consoleView, processHandler)
     }
 
     @Throws(ExecutionException::class)
