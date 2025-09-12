@@ -1,0 +1,11 @@
+bash -c "npx testcafe chrome D:/workspace/idea-testcafe-runner/testcafe/tests/simple.test.js -t \"Simple test with console log\""
+Testing started at 01:02 ...
+ Running tests in:
+ - Chrome 140.0.0.0 / Windows 11
+
+ Sample Test
+Hello from TestCafe!
+ √ Simple test with console log
+
+
+ 1 passed (1s)

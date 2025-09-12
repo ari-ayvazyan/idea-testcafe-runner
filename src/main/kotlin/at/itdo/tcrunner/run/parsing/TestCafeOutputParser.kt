@@ -7,38 +7,44 @@ class TestCafeOutputParser(
     private val testFilePath: String,
     private val eventEmitter: TestEventEmitter
 ) {
-    private val outputBuffer = StringBuilder()
     private var currentFixture: String? = null
     private var hasEmittedStart = false
+    private var currentFailedTest: String? = null
+    private var messages: MutableList<String> = mutableListOf()
 
     fun processLine(line: String) {
-        outputBuffer.append(line).append("\n")
-
         val trimmed = line.trim()
 
         // Emit initial events when we see test execution start
         if (!hasEmittedStart && trimmed.isNotEmpty() &&
-            (trimmed.startsWith("Running tests in:") || !line.startsWith(" "))) {
+            (trimmed.startsWith("Running tests in:") || !line.startsWith(" "))
+        ) {
             eventEmitter.emitTestRunStarted()
             hasEmittedStart = true
         }
 
         when {
-            // Fixture detection - lines that contain fixture names
-            trimmed.isNotEmpty() &&
-            !trimmed.startsWith("√") &&
-            !trimmed.startsWith("×") &&
-            !trimmed.startsWith("Running tests in:") &&
-            !trimmed.startsWith("Testing started at") &&
-            !trimmed.startsWith("bash -c") &&
-            !trimmed.startsWith("-") &&
-            !trimmed.contains("Hello from TestCafe!") &&
-            !trimmed.matches(Regex("\\d+/\\d+\\s+failed.*")) &&
-            !trimmed.startsWith("Warnings") &&
-            !trimmed.contains(")") &&
-            !trimmed.startsWith("Chrome ") &&
-            // Fixture lines are either non-indented or slightly indented (like " Sample Test")
-            ((!line.startsWith(" ")) || (line.startsWith(" ") && !line.startsWith("  "))) -> {
+            // Passing test
+            trimmed.startsWith("√") -> {
+                val testName = trimmed.substring(1).trim()
+                eventEmitter.emitTestStarted(testName, testFilePath)
+                eventEmitter.emitTestPassed(testName)
+            }
+
+            // Failing test - start collecting error details
+            trimmed.startsWith("×") -> {
+                val testName = trimmed.substring(1).trim()
+                eventEmitter.emitTestStarted(testName, testFilePath)
+
+                // Start collecting error details for this test
+                currentFailedTest = testName
+            }
+
+            // Fixture lines - specifically look for lines that match fixture pattern
+            line.startsWith(" ")
+                    && !line.startsWith("  ")
+                    && !line.startsWith(" --")
+                        -> {
 
                 // Close previous fixture if exists
                 currentFixture?.let { fixture ->
@@ -50,69 +56,20 @@ class TestCafeOutputParser(
                 eventEmitter.emitFixtureStarted(trimmed, testFilePath)
             }
 
-            // Passing test
-            trimmed.startsWith("√") -> {
-                val testName = trimmed.substring(1).trim()
-                eventEmitter.emitTestStarted(testName, testFilePath)
-                eventEmitter.emitTestPassed(testName)
+            // Test run summary - finish up
+            trimmed.matches(Regex("\\d+/\\d+\\s+failed.*")) ||
+            trimmed.matches(Regex("\\d+\\s+passed \\(.+\\)")) -> {
+                finishTestRun()
             }
-
-            // Failing test
-            trimmed.startsWith("×") -> {
-                val testName = trimmed.substring(1).trim()
-                eventEmitter.emitTestStarted(testName, testFilePath)
-                // We'll emit testFailed when we process the complete output
-            }
-        }
-
-        // Check if we've reached the end (summary line)
-        if (line.contains(Regex("\\d+/\\d+\\s+failed"))) {
-            processCompleteOutput()
         }
     }
 
-    fun processCompleteOutput() {
-        val fullOutput = outputBuffer.toString()
-        val lines = fullOutput.lines()
-
-        var lastFailedTest: String? = null
-        var collectingError = false
-        val errorLines = mutableListOf<String>()
-
-        for (line in lines) {
-            val trimmed = line.trim()
-
-            if (trimmed.startsWith("×")) {
-                lastFailedTest = trimmed.substring(1).trim()
-                collectingError = true
-                errorLines.clear()
-            } else if (collectingError && trimmed.matches(Regex("\\d+\\)\\s+.*"))) {
-                errorLines.add(trimmed.substring(trimmed.indexOf(')') + 1).trim())
-            } else if (collectingError && trimmed.isNotEmpty() &&
-                      !trimmed.matches(Regex("\\d+/\\d+\\s+failed.*")) &&
-                      !trimmed.startsWith("Warnings")) {
-                errorLines.add(trimmed)
-            } else if (collectingError && (trimmed.isEmpty() ||
-                     trimmed.matches(Regex("\\d+/\\d+\\s+failed.*")) ||
-                     trimmed.startsWith("Warnings"))) {
-                // End of error section
-                lastFailedTest?.let { testName ->
-                    val errorMessage = errorLines.joinToString("\n")
-                    eventEmitter.emitTestFailed(testName, errorMessage)
-                }
-                collectingError = false
-                lastFailedTest = null
-
-                if (trimmed.matches(Regex("\\d+/\\d+\\s+failed.*"))) {
-                    // Close remaining test suites
-                    currentFixture?.let { fixture ->
-                        eventEmitter.emitFixtureFinished(fixture)
-                    }
-                    eventEmitter.emitTestRunFinished()
-                    break
-                }
-            }
+    private fun finishTestRun() {
+        // Close remaining fixture and test run
+        currentFixture?.let { fixture ->
+            eventEmitter.emitFixtureFinished(fixture)
         }
+        eventEmitter.emitTestRunFinished()
     }
 }
 

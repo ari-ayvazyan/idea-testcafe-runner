@@ -23,7 +23,7 @@ class TestCafeOutputParserTest {
     @Test
     fun `should parse TestCafe output and emit correct events`() {
         // Load the sample test log
-        val logFile = File("src/test/resources/tc-sample-test-log.txt")
+        val logFile = File("src/test/resources/tc-sample-test-with-failure.txt")
         val logContent = logFile.readText()
 
         // Process each line as the parser would receive them
@@ -42,6 +42,7 @@ class TestCafeOutputParserTest {
 
         // Should detect the fixture
         val fixtureStarted = events.filterIsInstance<TestEvent.FixtureStarted>()
+        println("Detected fixtures: ${fixtureStarted.map { it.fixtureName }}")
         assertEquals(1, fixtureStarted.size)
         assertEquals("Sample Test", fixtureStarted.first().fixtureName)
         assertEquals(testFilePath, fixtureStarted.first().filePath)
