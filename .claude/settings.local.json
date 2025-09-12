@@ -16,7 +16,9 @@
       "Bash(kotlinc:*)",
       "Bash(java:*)",
       "Bash(npm run test:*)",
-      "WebFetch(domain:javadoc.jetbrains.net)"
+      "WebFetch(domain:javadoc.jetbrains.net)",
+      "Bash(dir)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": []
