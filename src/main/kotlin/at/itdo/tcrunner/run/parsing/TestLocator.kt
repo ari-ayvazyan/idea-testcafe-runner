@@ -1,4 +1,4 @@
-package at.itdo.tcrunner.run
+package at.itdo.tcrunner.run.parsing
 
 import com.intellij.execution.Location
 import com.intellij.execution.PsiLocation
@@ -9,8 +9,8 @@ import com.intellij.psi.PsiManager
 import com.intellij.psi.search.GlobalSearchScope
 import java.io.File
 
-class TestCafeTestLocator : SMTestLocator {
-    
+class TestLocator : SMTestLocator {
+
     companion object {
         const val PROTOCOL = "file"
     }
@@ -26,7 +26,7 @@ class TestCafeTestLocator : SMTestLocator {
         }
 
         val locations = mutableListOf<Location<*>>()
-        
+
         try {
             // Parse path - it should be a file path
             val virtualFile = VfsUtil.findFileByIoFile(File(path), true)
@@ -39,7 +39,7 @@ class TestCafeTestLocator : SMTestLocator {
         } catch (e: Exception) {
             // Ignore invalid paths
         }
-        
+
         return locations
     }
 }
