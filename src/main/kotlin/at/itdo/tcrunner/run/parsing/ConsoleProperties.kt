@@ -1,7 +1,7 @@
-package at.itdo.tcrunner.run
+package at.itdo.tcrunner.run.parsing
 
+import at.itdo.tcrunner.run.RunConfiguration
 import com.intellij.execution.Executor
-import com.intellij.execution.testframework.TestConsoleProperties
 import com.intellij.execution.testframework.sm.runner.SMTRunnerConsoleProperties
 import com.intellij.execution.testframework.sm.runner.SMTestLocator
 
@@ -11,17 +11,17 @@ class TestCafeTestConsoleProperties(
 ) : SMTRunnerConsoleProperties(configuration, "TestCafe", executor) {
 
     override fun getTestLocator(): SMTestLocator {
-        return TestCafeTestLocator()
+        return TestLocator()
     }
 
     override fun isIdBasedTestTree(): Boolean = false
-    
+
     init {
         // Configure test console behavior
-        setIfUndefined(TestConsoleProperties.HIDE_PASSED_TESTS, false)
-        setIfUndefined(TestConsoleProperties.HIDE_IGNORED_TEST, false) 
-        setIfUndefined(TestConsoleProperties.SCROLL_TO_STACK_TRACE, true)
-        setIfUndefined(TestConsoleProperties.SELECT_FIRST_DEFECT, true)
-        setIfUndefined(TestConsoleProperties.TRACK_RUNNING_TEST, true)
+        setIfUndefined(HIDE_PASSED_TESTS, false)
+        setIfUndefined(HIDE_IGNORED_TEST, false)
+        setIfUndefined(SCROLL_TO_STACK_TRACE, true)
+        setIfUndefined(SELECT_FIRST_DEFECT, true)
+        setIfUndefined(TRACK_RUNNING_TEST, true)
     }
 }
