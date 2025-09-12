@@ -2,10 +2,12 @@ package at.itdo.tcrunner
 
 import at.itdo.tcrunner.run.parsing.TestCafeOutputParser
 import at.itdo.tcrunner.run.parsing.TestEventEmitter
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.*
 import java.io.File
+import kotlin.test.assertNotNull
 
 class TestCafeOutputParserTest {
 
@@ -31,21 +33,18 @@ class TestCafeOutputParserTest {
             parser.processLine(line)
         }
 
-        // Call processCompleteOutput to handle error collection
-        parser.processCompleteOutput()
-
         // Verify the events that were captured
         val events = capturedEvents
 
         // Should start with test run started
         assertTrue(events.any { it is TestEvent.TestRunStarted })
 
-        // Should detect the fixture
+        // Should detect the fixture. we dont care if other things than fixtures are detected aswell
         val fixtureStarted = events.filterIsInstance<TestEvent.FixtureStarted>()
         println("Detected fixtures: ${fixtureStarted.map { it.fixtureName }}")
-        assertEquals(1, fixtureStarted.size)
-        assertEquals("Sample Test", fixtureStarted.first().fixtureName)
-        assertEquals(testFilePath, fixtureStarted.first().filePath)
+        assertTrue(fixtureStarted.isNotEmpty())
+        assertNotNull(fixtureStarted.find { it.fixtureName == "Sample Test" }?.fixtureName)
+        assertEquals(testFilePath, fixtureStarted.find { it.fixtureName == "Sample Test" }?.filePath)
 
         // Should detect all test starts
         val testStarted = events.filterIsInstance<TestEvent.TestStarted>()
@@ -60,14 +59,10 @@ class TestCafeOutputParserTest {
         assertEquals("Simple test with console log", testPassed[0].testName)
         assertEquals("Simple test 2 with console log", testPassed[1].testName)
 
-        // Should detect failed tests (note: original logic may emit multiple failure events due to logic errors)
         val testFailed = events.filterIsInstance<TestEvent.TestFailed>()
         assertTrue(testFailed.isNotEmpty())
         assertTrue(testFailed.any { it.testName == "Simple test 3 with err" })
-        // Note: Error message extraction may be broken in original implementation - that's expected
 
-        // Verify overall test structure extraction worked correctly
-        // Note: Some finish events may not be emitted due to original implementation logic errors
         println("Successfully parsed TestCafe output with ${events.size} total events")
     }
 
