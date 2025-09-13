@@ -122,21 +122,21 @@ class TestCafeOutputParserTest {
         private val events = mutableListOf<TestEvent>()
 
         override fun emitTestRunStarted() { events.add(TestEvent.TestRunStarted) }
-        override fun emitTestRunFinished() { events.add(TestEvent.TestRunFinished) }
+        override fun emitTestRunFinished(duration: String) { events.add(TestEvent.TestRunFinished(duration)) }
         override fun emitFixtureStarted(fixtureName: String, filePath: String) {
             events.add(TestEvent.FixtureStarted(fixtureName, filePath))
         }
-        override fun emitFixtureFinished(fixtureName: String) {
-            events.add(TestEvent.FixtureFinished(fixtureName))
+        override fun emitFixtureFinished(fixtureName: String, duration: String) {
+            events.add(TestEvent.FixtureFinished(fixtureName, duration))
         }
         override fun emitTestStarted(testName: String, filePath: String) {
             events.add(TestEvent.TestStarted(testName, filePath))
         }
-        override fun emitTestPassed(testName: String, messages: String) {
-            events.add(TestEvent.TestPassed(testName, messages))
+        override fun emitTestPassed(testName: String, messages: String, duration: String) {
+            events.add(TestEvent.TestPassed(testName, messages, duration))
         }
-        override fun emitTestFailed(testName: String, messages: String) {
-            events.add(TestEvent.TestFailed(testName, messages))
+        override fun emitTestFailed(testName: String, messages: String, duration: String) {
+            events.add(TestEvent.TestFailed(testName, messages, duration))
         }
 
         fun clear() {
@@ -268,11 +268,11 @@ class TestCafeOutputParserTest {
 
     sealed class TestEvent {
         object TestRunStarted : TestEvent()
-        object TestRunFinished : TestEvent()
+        data class TestRunFinished(val duration: String = "") : TestEvent()
         data class FixtureStarted(val fixtureName: String, val filePath: String) : TestEvent()
-        data class FixtureFinished(val fixtureName: String) : TestEvent()
+        data class FixtureFinished(val fixtureName: String, val duration: String = "") : TestEvent()
         data class TestStarted(val testName: String, val filePath: String) : TestEvent()
-        data class TestPassed(val testName: String, val messages: String = "") : TestEvent()
-        data class TestFailed(val testName: String, val messages: String = "") : TestEvent()
+        data class TestPassed(val testName: String, val messages: String = "", val duration: String = "") : TestEvent()
+        data class TestFailed(val testName: String, val messages: String = "", val duration: String = "") : TestEvent()
     }
 }
