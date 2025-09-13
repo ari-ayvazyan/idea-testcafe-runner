@@ -65,6 +65,18 @@ class TestCafeOutputParser(
                 }
             }
 
+            // Test run summary - finish up (detect various summary patterns)
+            trimmed.matches(Regex("\\d+/\\d+\\s+failed.*")) ||
+                    trimmed.matches(Regex("\\d+\\s+passed \\(.+\\)")) -> {
+                if (collectingFailedTestMessages) {
+                    // If we were collecting messages for a failed test, emit it now
+                    failCurrentTestIfExists()
+                    collectingFailedTestMessages = false
+                }
+                failCurrentTestIfExists()
+                finishTestRun()
+            }
+
             // Fixture lines: lines starting with single space but not test results
             line.startsWith(" ")
                     && !line.startsWith("  ")
@@ -79,18 +91,6 @@ class TestCafeOutputParser(
                 // Start new fixture
                 currentFixture = trimmed
                 eventEmitter.emitFixtureStarted(trimmed, testFilePath)
-            }
-
-            // Test run summary - finish up (detect various summary patterns)
-            trimmed.matches(Regex("\\d+/\\d+\\s+failed.*")) ||
-                    trimmed.matches(Regex("\\d+\\s+passed \\(.+\\)")) -> {
-                if (collectingFailedTestMessages) {
-                    // If we were collecting messages for a failed test, emit it now
-                    failCurrentTestIfExists()
-                    collectingFailedTestMessages = false
-                }
-                failCurrentTestIfExists()
-                finishTestRun()
             }
 
             // Default case: collect any other line as a message if we have a fixture context
@@ -118,20 +118,11 @@ class TestCafeOutputParser(
 
     private fun finishTestRun() {
         // If we still have a failed test in progress, emit it now
-        getCurrentTestnameOrCreateDefaultIfLogsPresent()?.let { testName ->
+        currentTest?.let { testName ->
             val collectedMessages = if (messages.isNotEmpty()) messages.joinToString("\n") else "Test failed"
             eventEmitter.emitTestPassed(testName, collectedMessages)
             messages.clear()
             currentTest = null
-        }
-
-        // If we have a fixture but no test was created, create one for any accumulated messages
-        if (currentFixture != null && currentTest == null && messages.isNotEmpty()) {
-            val testName = "info"
-            eventEmitter.emitTestStarted(testName, testFilePath)
-            val collectedMessages = messages.joinToString("\n")
-            eventEmitter.emitTestPassed(testName, collectedMessages)
-            messages.clear()
         }
 
         // Close remaining fixture and test run
@@ -141,15 +132,6 @@ class TestCafeOutputParser(
         eventEmitter.emitTestRunFinished()
     }
 
-    private fun getCurrentTestnameOrCreateDefaultIfLogsPresent(): String? {
-        if (currentTest != null) return currentTest
-        if (messages.isNotEmpty()) {
-            eventEmitter.emitTestStarted("logs", testFilePath)
-            currentTest = "logs"
-            return "logs"
-        }
-        return null
-    }
 }
 
 /**
