@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "at.itdo"
-version = "0.1.0"
+version = "0.1.1"
 
 repositories {
     mavenCentral()
@@ -18,15 +18,15 @@ repositories {
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html
 dependencies {
     intellijPlatform {
-        create("IU", "2025.1.4.1")
-        
+        create("IU", "2025.2.1")
+
         // JavaScript plugin for AST parsing
         bundledPlugin("JavaScript")
     }
-    
+
     // Coroutines - required by IntelliJ Platform
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
-    
+
     // Test dependencies
     testImplementation("io.mockk:mockk:1.13.8")
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.1")
@@ -37,7 +37,7 @@ intellijPlatform {
     pluginConfiguration {
         ideaVersion {
             sinceBuild = "251"
-            untilBuild = ""
+            untilBuild = "252.*"
         }
 
         changeNotes = """
@@ -52,11 +52,11 @@ intellijPlatform {
             </ul>
         """.trimIndent()
     }
-    
+
     publishing {
         token = providers.environmentVariable("PUBLISH_TOKEN")
     }
-    
+
     pluginVerification {
         ides {
             recommended()
@@ -70,7 +70,7 @@ tasks {
         sourceCompatibility = "21"
         targetCompatibility = "21"
     }
-    
+
     test {
         useJUnitPlatform()
     }
