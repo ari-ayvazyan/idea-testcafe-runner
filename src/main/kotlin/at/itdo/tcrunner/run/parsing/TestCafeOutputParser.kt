@@ -61,14 +61,14 @@ class TestCafeOutputParser(
 
             // Test run summary - finish up (detect various summary patterns)
             trimmed.matches(Regex("\\d+/\\d+\\s+failed.*")) ||
-            trimmed.matches(Regex("\\d+\\s+passed \\(.+\\)")) -> {
+                    trimmed.matches(Regex("\\d+\\s+passed \\(.+\\)")) -> {
                 finishCurrentTest()
                 finishTestRun()
             }
 
             // Default case: collect any other line as a message if we have a fixture context
             else -> {
-                messages.add(line)
+                if (trimmed.isNotBlank()) messages.add(line)
             }
         }
     }
@@ -99,7 +99,7 @@ class TestCafeOutputParser(
     }
 
     private fun getCurrentTestnameOrCreateDefaultIfLogsPresent(): String? {
-        if(currentTest!=null || messages.isNotEmpty()) return currentTest
+        if (currentTest != null || messages.isNotEmpty()) return currentTest
         eventEmitter.emitTestStarted("logs", testFilePath)
         currentTest = "logs"
         return "logs"

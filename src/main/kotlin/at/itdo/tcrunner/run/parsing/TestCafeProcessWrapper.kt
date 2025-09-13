@@ -100,10 +100,7 @@ private class TestCafeOutputListener(
         override fun emitTestFailed(testName: String, messages: String) {
             // Use the messages as both console output and error details
             if (messages.isNotEmpty()) {
-                emitServiceMessage(TeamCityServiceMessageFormatter.testStdOut(testName, messages))
                 emitServiceMessage(TeamCityServiceMessageFormatter.testFailed(testName, messages))
-            } else {
-                emitServiceMessage(TeamCityServiceMessageFormatter.testFailed(testName, "Test failed"))
             }
             emitServiceMessage(TeamCityServiceMessageFormatter.testFinished(testName))
         }
