@@ -23,8 +23,8 @@ object TeamCityServiceMessageFormatter {
     fun testFinished(name: String, duration: String = "0"): String =
         "##teamcity[testFinished name='${escapeValue(name)}' duration='$duration']"
 
-    fun testFailed(name: String, message: String, details: String = message): String =
-        "##teamcity[testFailed name='${escapeValue(name)}' message='${escapeValue(message)}' details='${escapeValue(details)}']"
+    fun testFailed(name: String): String =
+        "##teamcity[testFailed name='${escapeValue(name)}' message='Test failed']"
 
     fun testStdOut(name: String, out: String): String =
         "##teamcity[testStdOut name='${escapeValue(name)}' out='${escapeValue(out)}']"

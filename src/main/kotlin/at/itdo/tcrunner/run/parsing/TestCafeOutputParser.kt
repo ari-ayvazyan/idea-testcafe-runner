@@ -14,6 +14,7 @@ class TestCafeOutputParser(
     private var hasEmittedStart = false
     private var currentTest: String? = null
     private var collectingFailedTestMessages = false
+    private var overallDuration: String = ""
 
     fun processLine(line: String) {
         val lineType = lineClassifier.classifyLine(line)
@@ -23,7 +24,7 @@ class TestCafeOutputParser(
 
         when (lineType) {
             LineType.TEST_RESULT -> handleTestResult(line)
-            LineType.TEST_RUN_SUMMARY -> handleTestRunSummary()
+            LineType.TEST_RUN_SUMMARY -> handleTestRunSummary(line)
             LineType.FIXTURE -> handleFixture(line)
             LineType.ERROR_MESSAGE -> {
                 if (collectingFailedTestMessages) {
@@ -102,7 +103,11 @@ class TestCafeOutputParser(
         collectingFailedTestMessages = true
     }
 
-    private fun handleTestRunSummary() {
+    private fun handleTestRunSummary(line: String) {
+        val summary = lineClassifier.parseTestRunSummary(line)
+        if (summary != null) {
+            overallDuration = summary.duration
+        }
         finishPreviousFailedTestIfCollecting()
         failCurrentTestIfExists()
         finishTestRun()
@@ -157,7 +162,7 @@ class TestCafeOutputParser(
         }
 
         closeCurrentFixtureIfExists()
-        eventEmitter.emitTestRunFinished()
+        eventEmitter.emitTestRunFinished(overallDuration)
     }
 
 }

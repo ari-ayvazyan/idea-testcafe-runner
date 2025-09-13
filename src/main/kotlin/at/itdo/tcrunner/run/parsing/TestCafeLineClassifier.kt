@@ -11,6 +11,7 @@ enum class LineType {
 }
 
 data class TestResult(val isSuccess: Boolean, val testName: String)
+data class TestRunSummary(val passed: Int, val total: Int, val duration: String)
 
 class TestCafeLineClassifier {
 
@@ -38,6 +39,33 @@ class TestCafeLineClassifier {
 
     fun parseFixtureName(line: String): String? {
         return if (isFixtureLine(line)) line.trim() else null
+    }
+
+    fun parseTestRunSummary(line: String): TestRunSummary? {
+        if (!isTestRunSummary(line)) return null
+
+        val trimmed = line.trim()
+
+        // Parse patterns like "2/5 failed (2s)" or "3 passed (1s)"
+        val failedPattern = Regex("(\\d+)/(\\d+)\\s+failed\\s+\\(([^)]+)\\)")
+        val passedPattern = Regex("(\\d+)\\s+passed\\s+\\(([^)]+)\\)")
+
+        val failedMatch = failedPattern.find(trimmed)
+        if (failedMatch != null) {
+            val failed = failedMatch.groupValues[1].toInt()
+            val total = failedMatch.groupValues[2].toInt()
+            val duration = failedMatch.groupValues[3]
+            return TestRunSummary(total - failed, total, duration)
+        }
+
+        val passedMatch = passedPattern.find(trimmed)
+        if (passedMatch != null) {
+            val passed = passedMatch.groupValues[1].toInt()
+            val duration = passedMatch.groupValues[2]
+            return TestRunSummary(passed, passed, duration)
+        }
+
+        return null
     }
 
     private fun isTestExecutionStart(line: String): Boolean {

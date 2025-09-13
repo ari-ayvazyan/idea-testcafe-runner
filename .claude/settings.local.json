@@ -19,7 +19,8 @@
       "WebFetch(domain:javadoc.jetbrains.net)",
       "Bash(dir)",
       "Bash(findstr:*)",
-      "Bash(.gradlew test:*)"
+      "Bash(.gradlew test:*)",
+      "Bash(dir D:workspaceidea-testcafe-runnerbuildreportsteststest)"
     ],
     "deny": [],
     "ask": []
