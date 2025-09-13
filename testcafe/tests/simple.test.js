@@ -15,3 +15,13 @@ test('Simple test 3 with err', async t => {
   console.log('This message belongs to Simple test 3!');
   t.expect(false).ok()
 });
+
+test('Simple test 4 with err', async t => {
+  console.log('This message belongs to Simple test 4!');
+  await t.expect(true).ok()
+});
+
+test('Simple test 5 with err', async t => {
+  console.log('This message belongs to Simple test 5!');
+  await t.expect(false).ok()
+});
