@@ -10,6 +10,7 @@ class TestCafeOutputParser(
     private var currentFixture: String? = null
     private var hasEmittedStart = false
     private var currentTest: String? = null
+    private var collectingFailedTestMessages = false
     private var messages: MutableList<String> = mutableListOf()
 
     fun processLine(line: String) {
@@ -23,11 +24,31 @@ class TestCafeOutputParser(
             hasEmittedStart = true
         }
 
+        if (            //Collect error messages until next test or fixture
+            collectingFailedTestMessages
+            && trimmed.isNotBlank()
+            && !trimmed.contains("Browser:")
+            && !line.matches(Regex("\\s*\\d+\\).*"))
+            && !line.matches(Regex("\\s*\\d+\\s\\|.*"))
+            && !line.matches(Regex("\\s*>\\s\\d+\\s\\|.*"))
+            && !trimmed.startsWith("at ")
+        ) {
+            failCurrentTestIfExists()
+            collectingFailedTestMessages = false
+        }
+
         when {
+            collectingFailedTestMessages -> if (line.isNotBlank()) messages.add(line)
             // Test result lines: " √ testname" or " × testname"
             line.matches(Regex(" [√×] .*")) -> {
                 val isSuccess = line.contains("√")
                 val testName = line.substring(3).trim() // Remove " √ " or " × "
+
+                if (collectingFailedTestMessages) {
+                    // If we were collecting messages for a failed test, emit it now
+                    failCurrentTestIfExists()
+                    collectingFailedTestMessages = false
+                }
 
                 eventEmitter.emitTestStarted(testName, testFilePath)
 
@@ -40,6 +61,7 @@ class TestCafeOutputParser(
                 } else {
                     // For failed test, keep all accumulated messages and start collecting more
                     currentTest = testName
+                    collectingFailedTestMessages = true
                 }
             }
 
@@ -48,7 +70,7 @@ class TestCafeOutputParser(
                     && !line.startsWith("  ")
                     && !line.matches(Regex(" [√×] .*"))
                     && trimmed != "--" -> {
-                finishCurrentTest()
+                failCurrentTestIfExists()
                 // Close previous fixture if exists
                 currentFixture?.let { fixture ->
                     eventEmitter.emitFixtureFinished(fixture)
@@ -62,7 +84,12 @@ class TestCafeOutputParser(
             // Test run summary - finish up (detect various summary patterns)
             trimmed.matches(Regex("\\d+/\\d+\\s+failed.*")) ||
                     trimmed.matches(Regex("\\d+\\s+passed \\(.+\\)")) -> {
-                finishCurrentTest()
+                if (collectingFailedTestMessages) {
+                    // If we were collecting messages for a failed test, emit it now
+                    failCurrentTestIfExists()
+                    collectingFailedTestMessages = false
+                }
+                failCurrentTestIfExists()
                 finishTestRun()
             }
 
@@ -73,7 +100,7 @@ class TestCafeOutputParser(
         }
     }
 
-    private fun finishCurrentTest() {
+    private fun failCurrentTestIfExists() {
         currentTest?.let { testName ->
             val collectedMessages = if (messages.isNotEmpty()) messages.joinToString("\n") else "Test failed"
             eventEmitter.emitTestFailed(testName, collectedMessages)
