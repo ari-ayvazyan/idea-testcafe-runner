@@ -18,7 +18,8 @@
       "Bash(npm run test:*)",
       "WebFetch(domain:javadoc.jetbrains.net)",
       "Bash(dir)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(.gradlew test:*)"
     ],
     "deny": [],
     "ask": []

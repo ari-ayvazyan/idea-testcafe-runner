@@ -100,6 +100,13 @@ class TestCafeOutputParser(
         }
     }
 
+    /**
+     * Call this when parsing is complete to ensure all tests are properly finished
+     */
+    fun finalizeParsing() {
+        finishTestRun()
+    }
+
     private fun failCurrentTestIfExists() {
         currentTest?.let { testName ->
             val collectedMessages = if (messages.isNotEmpty()) messages.joinToString("\n") else "Test failed"
@@ -118,6 +125,15 @@ class TestCafeOutputParser(
             currentTest = null
         }
 
+        // If we have a fixture but no test was created, create one for any accumulated messages
+        if (currentFixture != null && currentTest == null && messages.isNotEmpty()) {
+            val testName = "info"
+            eventEmitter.emitTestStarted(testName, testFilePath)
+            val collectedMessages = messages.joinToString("\n")
+            eventEmitter.emitTestPassed(testName, collectedMessages)
+            messages.clear()
+        }
+
         // Close remaining fixture and test run
         currentFixture?.let { fixture ->
             eventEmitter.emitFixtureFinished(fixture)
@@ -126,10 +142,13 @@ class TestCafeOutputParser(
     }
 
     private fun getCurrentTestnameOrCreateDefaultIfLogsPresent(): String? {
-        if (currentTest != null || messages.isNotEmpty()) return currentTest
-        eventEmitter.emitTestStarted("logs", testFilePath)
-        currentTest = "logs"
-        return "logs"
+        if (currentTest != null) return currentTest
+        if (messages.isNotEmpty()) {
+            eventEmitter.emitTestStarted("logs", testFilePath)
+            currentTest = "logs"
+            return "logs"
+        }
+        return null
     }
 }
 
