@@ -2,7 +2,7 @@ package at.itdo.tcrunner.run
 
 import at.itdo.tcrunner.Settings
 import at.itdo.tcrunner.run.parsing.TestCafeProcessWrapper
-import at.itdo.tcrunner.run.parsing.TestCafeTestConsoleProperties
+import at.itdo.tcrunner.run.parsing.ConsoleProperties
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
@@ -36,7 +36,7 @@ class RunProfileState(
         val processHandler = startProcess()
 
         // Create SM Test Runner console with proper properties
-        val properties = TestCafeTestConsoleProperties(configuration, executor)
+        val properties = ConsoleProperties(configuration, executor)
         val consoleView = SMTestRunnerConnectionUtil.createAndAttachConsole(
             "TestCafe",
             processHandler,
