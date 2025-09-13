@@ -5,7 +5,7 @@ import com.intellij.execution.Executor
 import com.intellij.execution.testframework.sm.runner.SMTRunnerConsoleProperties
 import com.intellij.execution.testframework.sm.runner.SMTestLocator
 
-class TestCafeTestConsoleProperties(
+class ConsoleProperties(
     configuration: RunConfiguration,
     executor: Executor
 ) : SMTRunnerConsoleProperties(configuration, "TestCafe", executor) {
