@@ -89,12 +89,22 @@ private class TestCafeOutputListener(
             emitServiceMessage(TeamCityServiceMessageFormatter.testStarted(testName, "file://$filePath"))
         }
 
-        override fun emitTestPassed(testName: String) {
+        override fun emitTestPassed(testName: String, messages: String) {
+            // Include messages in test output if present
+            if (messages.isNotEmpty()) {
+                emitServiceMessage(TeamCityServiceMessageFormatter.testStdOut(testName, messages))
+            }
             emitServiceMessage(TeamCityServiceMessageFormatter.testFinished(testName))
         }
 
-        override fun emitTestFailed(testName: String, errorMessage: String) {
-            emitServiceMessage(TeamCityServiceMessageFormatter.testFailed(testName, errorMessage))
+        override fun emitTestFailed(testName: String, messages: String) {
+            // Use the messages as both console output and error details
+            if (messages.isNotEmpty()) {
+                emitServiceMessage(TeamCityServiceMessageFormatter.testStdOut(testName, messages))
+                emitServiceMessage(TeamCityServiceMessageFormatter.testFailed(testName, messages))
+            } else {
+                emitServiceMessage(TeamCityServiceMessageFormatter.testFailed(testName, "Test failed"))
+            }
             emitServiceMessage(TeamCityServiceMessageFormatter.testFinished(testName))
         }
     }

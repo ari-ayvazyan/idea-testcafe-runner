@@ -26,6 +26,9 @@ object TeamCityServiceMessageFormatter {
     fun testFailed(name: String, message: String, details: String = message): String =
         "##teamcity[testFailed name='${escapeValue(name)}' message='${escapeValue(message)}' details='${escapeValue(details)}']"
 
+    fun testStdOut(name: String, out: String): String =
+        "##teamcity[testStdOut name='${escapeValue(name)}' out='${escapeValue(out)}']"
+
     private fun escapeValue(value: String): String {
         return value
             .replace("|", "||")
