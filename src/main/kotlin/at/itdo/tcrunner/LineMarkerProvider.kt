@@ -38,12 +38,20 @@ class LineMarkerProvider : LineMarkerProvider {
             elementOffset >= declaration.startOffset && elementOffset < declaration.endOffset
         } ?: return null
 
+        // Check if there are any exclusive declarations in the file
+        val hasExclusiveDeclarations = analyzer.hasExclusiveDeclarations(psiFile)
+
+        // If there are exclusive declarations, only show play buttons for exclusive ones
+        if (hasExclusiveDeclarations && !matchingDeclaration.isExclusive) {
+            return null
+        }
+
         return createLineMarkerInfo(element, matchingDeclaration, psiFile, project)
     }
 
     private fun isDeclarationIdentifier(element: PsiElement): Boolean {
         val text = element.text
-        return text == "fixture" || text == "test"
+        return text == "fixture" || text == "test" || text == "only"
     }
 
     private fun createLineMarkerInfo(
@@ -69,9 +77,10 @@ class LineMarkerProvider : LineMarkerProvider {
     }
 
     private fun getTooltipText(declaration: Declaration): String {
+        val prefix = if (declaration.isExclusive) "Run exclusive TestCafe" else "Run TestCafe"
         return when (declaration) {
-            is Declaration.Test -> "Run TestCafe test: '${declaration.name}'"
-            is Declaration.Fixture -> "Run TestCafe fixture: '${declaration.name}'"
+            is Declaration.Test -> "$prefix test: '${declaration.name}'"
+            is Declaration.Fixture -> "$prefix fixture: '${declaration.name}'"
         }
     }
 }

@@ -6,7 +6,8 @@ sealed class Declaration(
     val name: String,
     val element: PsiElement,
     val startOffset: Int,
-    val endOffset: Int
+    val endOffset: Int,
+    val isExclusive: Boolean = false
 ) {
 
     class Fixture(
@@ -14,14 +15,16 @@ sealed class Declaration(
         element: PsiElement,
         startOffset: Int,
         endOffset: Int,
-        val page: String? = null
-    ) : Declaration(name, element, startOffset, endOffset)
+        val page: String? = null,
+        isExclusive: Boolean = false
+    ) : Declaration(name, element, startOffset, endOffset, isExclusive)
 
     class Test(
         name: String,
         element: PsiElement,
         startOffset: Int,
         endOffset: Int,
-        val fixture: String? = null
-    ) : Declaration(name, element, startOffset, endOffset)
+        val fixture: String? = null,
+        isExclusive: Boolean = false
+    ) : Declaration(name, element, startOffset, endOffset, isExclusive)
 }

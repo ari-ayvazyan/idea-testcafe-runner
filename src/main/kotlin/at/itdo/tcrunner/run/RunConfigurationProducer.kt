@@ -47,18 +47,33 @@ class RunConfigurationProducer : LazyRunConfigurationProducer<RunConfiguration>(
         // Find the declaration at current position
         val declaration = findDeclarationAtPosition(declarations, element)
 
+        // Check if there are exclusive declarations in the file
+        val hasExclusiveDeclarations = analyzer.hasExclusiveDeclarations(containingFile)
+
+        // If there are exclusive declarations, only allow configuration for exclusive ones
+        if (hasExclusiveDeclarations && declaration != null && !declaration.isExclusive) {
+            return false
+        }
+
         configuration.setScriptPath(virtualFile.path)
 
         when (declaration) {
             is Declaration.Test -> {
                 configuration.setTestFilter(declaration.name)
-                configuration.name = "TestCafe: ${declaration.name}"
+                val prefix = if (declaration.isExclusive) "TestCafe (exclusive):" else "TestCafe:"
+                configuration.name = "$prefix ${declaration.name}"
             }
             is Declaration.Fixture -> {
                 configuration.setFixtureFilter(declaration.name)
-                configuration.name = "TestCafe: ${declaration.name}"
+                val prefix = if (declaration.isExclusive) "TestCafe (exclusive):" else "TestCafe:"
+                configuration.name = "$prefix ${declaration.name}"
             }
             else -> {
+                // If there are exclusive declarations in the file but we didn't find a specific one,
+                // don't create a generic configuration
+                if (hasExclusiveDeclarations) {
+                    return false
+                }
                 configuration.name = "TestCafe: ${virtualFile.nameWithoutExtension}"
             }
         }
