@@ -6,10 +6,15 @@ import java.util.regex.Pattern
 class ASTAnalyzer {
 
     companion object {
-        private val FIXTURE_PATTERN = Pattern.compile("fixture\\s*\\(\\s*['\"]([^'\"]*)['\"]")
+        // Regular patterns - explicitly exclude .only variants
+        private val FIXTURE_PATTERN = Pattern.compile("(?<!\\.)fixture(?!\\.only)\\s*\\(\\s*['\"]([^'\"]*)['\"]")
+        private val TEST_PATTERN = Pattern.compile("(?<!\\.)test(?!\\.only)\\s*\\(\\s*['\"]([^'\"]*)['\"]")
+
+        // Only patterns with name capture
         private val FIXTURE_ONLY_PATTERN_WITH_NAME = Pattern.compile("fixture\\.only\\s*\\(\\s*['\"]([^'\"]*)['\"]")
-        private val TEST_PATTERN = Pattern.compile("test\\s*\\(\\s*['\"]([^'\"]*)['\"]")
         private val TEST_ONLY_PATTERN_WITH_NAME = Pattern.compile("test\\.only\\s*\\(\\s*['\"]([^'\"]*)['\"]")
+
+        // Other patterns
         private val PAGE_PATTERN = Pattern.compile("\\.page\\s*\\(\\s*['\"]([^'\"]*)['\"]")
         private val FIXTURE_ONLY_PATTERN = Pattern.compile("fixture\\.only\\s*\\(")
         private val TEST_ONLY_PATTERN = Pattern.compile("test\\.only\\s*\\(")
@@ -49,11 +54,6 @@ class ASTAnalyzer {
             val name = fixtureMatcher.group(1)
             val startOffset = fixtureMatcher.start()
             val endOffset = fixtureMatcher.end()
-
-            // Skip if this is already covered by fixture.only
-            if (declarations.any { it.startOffset == startOffset && it is Declaration.Fixture }) {
-                continue
-            }
 
             // Look for page information after this fixture
             val page = findPageAfterPosition(text, endOffset)
@@ -98,11 +98,6 @@ class ASTAnalyzer {
             val name = testMatcher.group(1)
             val startOffset = testMatcher.start()
             val endOffset = testMatcher.end()
-
-            // Skip if this is already covered by test.only
-            if (declarations.any { it.startOffset == startOffset && it is Declaration.Test }) {
-                continue
-            }
 
             val element = psiFile.findElementAt(startOffset) ?: continue
 

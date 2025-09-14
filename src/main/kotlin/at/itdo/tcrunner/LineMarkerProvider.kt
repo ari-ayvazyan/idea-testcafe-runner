@@ -51,7 +51,25 @@ class LineMarkerProvider : LineMarkerProvider {
 
     private fun isDeclarationIdentifier(element: PsiElement): Boolean {
         val text = element.text
-        return text == "fixture" || text == "test" || text == "only"
+
+        // Only match the primary identifiers, not the .only modifier
+        if (text != "fixture" && text != "test") {
+            return false
+        }
+
+        // For fixture.only or test.only, only create a marker for the main identifier
+        // Check if this is the start of a .only declaration by looking at the next sibling
+        val nextSibling = element.nextSibling?.nextSibling // Skip whitespace
+        if (nextSibling?.text == ".") {
+            val afterDot = nextSibling.nextSibling?.nextSibling // Skip whitespace
+            if (afterDot?.text == "only") {
+                // This is fixture.only or test.only - only create marker for the main identifier
+                return true
+            }
+        }
+
+        // This is a regular fixture() or test() - create marker
+        return true
     }
 
     private fun createLineMarkerInfo(
