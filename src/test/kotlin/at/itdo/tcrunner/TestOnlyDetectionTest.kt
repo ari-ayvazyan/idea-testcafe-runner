@@ -123,7 +123,7 @@ class TestOnlyDetectionTest {
             testOnlyCount = 1,
             fixtureOnlyCount = 0
         )
-        assertEquals("This file contains test.only() - only exclusive tests will run!", testOnlyDetails.getDisplayMessage())
+        assertEquals("This file contains test.only() or fixture.only() - only these tests can be run!", testOnlyDetails.getDisplayMessage())
 
         // Multiple test only
         val multipleTestOnlyDetails = ASTAnalyzer.OnlyUsageInfo(
@@ -132,7 +132,7 @@ class TestOnlyDetectionTest {
             testOnlyCount = 3,
             fixtureOnlyCount = 0
         )
-        assertEquals("This file contains test.only() (3 occurrences) - only exclusive tests will run!", multipleTestOnlyDetails.getDisplayMessage())
+        assertEquals("This file contains test.only() or fixture.only() - only these tests can be run!", multipleTestOnlyDetails.getDisplayMessage())
 
         // Fixture only
         val fixtureOnlyDetails = ASTAnalyzer.OnlyUsageInfo(
@@ -141,7 +141,7 @@ class TestOnlyDetectionTest {
             testOnlyCount = 0,
             fixtureOnlyCount = 1
         )
-        assertEquals("This file contains fixture.only() - only exclusive fixtures will run!", fixtureOnlyDetails.getDisplayMessage())
+        assertEquals("This file contains test.only() or fixture.only() - only these tests can be run!", fixtureOnlyDetails.getDisplayMessage())
 
         // Both
         val bothDetails = ASTAnalyzer.OnlyUsageInfo(
@@ -150,6 +150,6 @@ class TestOnlyDetectionTest {
             testOnlyCount = 2,
             fixtureOnlyCount = 1
         )
-        assertEquals("This file contains test.only() and fixture.only() - only these exclusive tests will run!", bothDetails.getDisplayMessage())
+        assertEquals("This file contains test.only() or fixture.only() - only these tests can be run!", bothDetails.getDisplayMessage())
     }
 }
