@@ -24,7 +24,7 @@ A comprehensive IntelliJ IDEA plugin that provides complete TestCafe integration
 5. Click `Install` and restart the IDE
 
 ### Manual Installation
-1. Download the plugin JAR file from the [releases page](https://github.com/yourrepo/idea-testcafe-runner/releases)
+1. Download the plugin JAR file from the releases page
 2. Go to `File → Settings → Plugins`
 3. Click the gear icon and select `Install Plugin from Disk...`
 4. Select the downloaded JAR file
@@ -42,8 +42,12 @@ A comprehensive IntelliJ IDEA plugin that provides complete TestCafe integration
 ### Basic Setup
 
 1. Go to `File → Settings → Tools → TestCafe Support` (or `IntelliJ IDEA → Preferences → Tools → TestCafe Support` on macOS)
-2. Configure your TestCafe command template (default: `npx testcafe chrome {filePath}`)
-3. Adjust parameters as needed for your project setup
+2. Configure your TestCafe command templates:
+   - **File Command**: `npx testcafe {browser} {filePath}` (default)
+   - **Test Command**: `npx testcafe {browser} {filePath} -t "{testName}"` (default)
+   - **Fixture Command**: `npx testcafe {browser} {filePath} -f "{fixtureName}"` (default)
+3. Set your preferred browser (default: chrome)
+4. Adjust file patterns, concurrency, timeout, and other parameters
 
 ### Command Templates
 
@@ -52,22 +56,23 @@ The plugin supports flexible command templates with the following placeholders:
 - `{filePath}` - The path to the test file
 - `{testName}` - The name of the specific test (when running individual tests)
 - `{fixtureName}` - The name of the fixture (when running fixture-level tests)
+- `{browser}` - The configured browser (default: chrome)
 
 #### Example Configurations
 
 **Basic Chrome execution:**
 ```
-npx testcafe chrome {filePath}
+npx testcafe {browser} {filePath}
 ```
 
 **With specific test filtering:**
 ```
-npx testcafe chrome {filePath} -t "{testName}"
+npx testcafe {browser} {filePath} -t "{testName}"
 ```
 
 **With fixture filtering:**
 ```
-npx testcafe chrome {filePath} -f "{fixtureName}"
+npx testcafe {browser} {filePath} -f "{fixtureName}"
 ```
 
 **Custom browser and options:**
@@ -130,12 +135,12 @@ The plugin automatically detects TestCafe tests in files matching these patterns
 - `*.spec.ts`
 - `*.test.js`
 - `*.test.ts`
-- `*-test.js`
-- `*-test.ts`
+
+These patterns are configurable in the plugin settings under `File → Settings → Tools → TestCafe Support`.
 
 ## Requirements
 
-- IntelliJ IDEA 2025.1+ or other JetBrains IDEs
+- IntelliJ IDEA 2025.2.1+ or other JetBrains IDEs
 - TestCafe installed in your project (npm package)
 - Node.js runtime environment
 
@@ -160,7 +165,7 @@ The plugin automatically detects TestCafe tests in files matching these patterns
 ### Getting Help
 
 - Check the [FAQ section](#faq)
-- Report issues on [GitHub](https://github.com/yourrepo/idea-testcafe-runner/issues)
+- Report issues on GitHub
 - Contact support through the JetBrains Marketplace plugin page
 
 ## FAQ
