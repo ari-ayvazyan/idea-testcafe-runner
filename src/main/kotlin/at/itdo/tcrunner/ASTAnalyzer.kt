@@ -9,6 +9,8 @@ class ASTAnalyzer {
         private val FIXTURE_PATTERN = Pattern.compile("fixture\\s*\\(\\s*['\"]([^'\"]*)['\"]")
         private val TEST_PATTERN = Pattern.compile("test\\s*\\(\\s*['\"]([^'\"]*)['\"]")
         private val PAGE_PATTERN = Pattern.compile("\\.page\\s*\\(\\s*['\"]([^'\"]*)['\"]")
+        private val FIXTURE_ONLY_PATTERN = Pattern.compile("fixture\\.only\\s*\\(")
+        private val TEST_ONLY_PATTERN = Pattern.compile("test\\.only\\s*\\(")
     }
 
     fun findTestCafeDeclarations(psiFile: PsiFile): List<Declaration> {
@@ -27,13 +29,15 @@ class ASTAnalyzer {
 
             val element = psiFile.findElementAt(startOffset) ?: continue
 
-            declarations.add(Declaration.Fixture(
-                name = name,
-                element = element,
-                startOffset = startOffset,
-                endOffset = endOffset,
-                page = page
-            ))
+            declarations.add(
+                Declaration.Fixture(
+                    name = name,
+                    element = element,
+                    startOffset = startOffset,
+                    endOffset = endOffset,
+                    page = page
+                )
+            )
         }
 
         // Find tests
@@ -45,15 +49,53 @@ class ASTAnalyzer {
 
             val element = psiFile.findElementAt(startOffset) ?: continue
 
-            declarations.add(Declaration.Test(
-                name = name,
-                element = element,
-                startOffset = startOffset,
-                endOffset = endOffset
-            ))
+            declarations.add(
+                Declaration.Test(
+                    name = name,
+                    element = element,
+                    startOffset = startOffset,
+                    endOffset = endOffset
+                )
+            )
         }
 
         return declarations
+    }
+
+    fun hasOnlyUsage(psiFile: PsiFile): Boolean {
+        val text = psiFile.text
+        return hasOnlyUsage(text)
+    }
+
+    fun hasOnlyUsage(text: String): Boolean {
+        return FIXTURE_ONLY_PATTERN.matcher(text).find() ||
+                TEST_ONLY_PATTERN.matcher(text).find()
+    }
+
+    fun getOnlyUsageDetails(psiFile: PsiFile): OnlyUsageInfo {
+        val text = psiFile.text
+        return getOnlyUsageDetails(text)
+    }
+
+    fun getOnlyUsageDetails(text: String): OnlyUsageInfo {
+        val hasTestOnly = TEST_ONLY_PATTERN.matcher(text).find()
+        val hasFixtureOnly = FIXTURE_ONLY_PATTERN.matcher(text).find()
+
+        return OnlyUsageInfo(
+            hasTestOnly = hasTestOnly,
+            hasFixtureOnly = hasFixtureOnly,
+            testOnlyCount = countMatches(TEST_ONLY_PATTERN, text),
+            fixtureOnlyCount = countMatches(FIXTURE_ONLY_PATTERN, text)
+        )
+    }
+
+    private fun countMatches(pattern: Pattern, text: String): Int {
+        val matcher = pattern.matcher(text)
+        var count = 0
+        while (matcher.find()) {
+            count++
+        }
+        return count
     }
 
     private fun findPageAfterPosition(text: String, startPosition: Int): String? {
@@ -62,5 +104,17 @@ class ASTAnalyzer {
         return if (matcher.find()) {
             matcher.group(1)
         } else null
+    }
+
+    data class OnlyUsageInfo(
+        val hasTestOnly: Boolean,
+        val hasFixtureOnly: Boolean,
+        val testOnlyCount: Int,
+        val fixtureOnlyCount: Int
+    ) {
+
+        fun getDisplayMessage(): String {
+            return "This file contains test.only() or fixture.only() - only these tests can be run!"
+        }
     }
 }

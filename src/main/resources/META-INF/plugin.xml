@@ -65,6 +65,10 @@
         <runConfigurationProducer
             implementation="at.itdo.tcrunner.run.RunConfigurationProducer" />
 
+        <!-- Editor Notification Provider for test.only/fixture.only detection -->
+        <editorNotificationProvider
+            implementation="at.itdo.tcrunner.notifications.TestOnlyNotificationProvider" />
+
     </extensions>
 
     <!-- Actions -->
