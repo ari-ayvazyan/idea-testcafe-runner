@@ -40,17 +40,7 @@ intellijPlatform {
             untilBuild = "252.*"
         }
 
-        changeNotes = """
-            <h3>0.1.0 - Initial Release</h3>
-            <ul>
-                <li>Smart TestCafe test detection in .spec.js and .spec.ts files</li>
-                <li>One-click test execution with play buttons</li>
-                <li>Configurable TestCafe command templates</li>
-                <li>Integrated test result display</li>
-                <li>Context menu integration for running tests</li>
-                <li>Support for fixture and individual test execution</li>
-            </ul>
-        """.trimIndent()
+        changeNotes = file("RELEASE_NOTES.html").readText()
     }
 
     publishing {
