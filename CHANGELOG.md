@@ -15,6 +15,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for parallel test execution
 - Advanced filtering and search capabilities in test results
 
+## [0.1.1] - 2025-09-14
+
+### Fixed
+- **Fixed duplicate play buttons**: Resolved issue where multiple play buttons could appear for the same test or fixture declarations
+
+### Added
+- **Test.only detection and warnings**: Added notification system to warn developers when `test.only()` is used in TestCafe files, helping prevent accidentally committed exclusive tests
+- **Exclusive test functionality**: When `test.only()` is detected, the plugin now disallows running other non-exclusive tests in the same file to match TestCafe's behavior
+
+### Changed
+- **Enhanced AST analysis**: Improved parsing logic for better detection of TestCafe test and fixture declarations
+- **Better test isolation**: Enhanced run configuration logic to respect TestCafe's exclusive test semantics
+
+### Technical Details
+- Added comprehensive test suite covering duplicate play button prevention, test.only detection, and exclusive test behavior
+- Enhanced `Declaration.kt` with additional metadata for exclusive test tracking
+- Updated plugin manifest to register new notification provider
+- Improved line marker provider logic for better UI consistency
+
 ## [0.1.0] - 2025-09-08
 
 ### Added
