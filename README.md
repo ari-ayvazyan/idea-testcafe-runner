@@ -1,11 +1,14 @@
-# TestCafe Runner for IntelliJ IDEA
+# TestCafe Support for IntelliJ IDEA
 
-A powerful IntelliJ IDEA plugin that provides seamless integration with TestCafe, allowing you to run tests directly from your IDE with intuitive play buttons and customizable execution commands.
+A comprehensive IntelliJ IDEA plugin that provides complete TestCafe integration, including intelligent test execution, exclusive test handling, and advanced editor features.
 
 ## Features
 
 - **Smart Test Detection**: Automatically detects TestCafe fixtures and tests in `.spec.js`, `.spec.ts`, and other test files
 - **One-Click Execution**: Run individual tests or entire fixtures with convenient play buttons in the editor
+- **Exclusive Test Support**: Intelligent handling of `test.only()` and `fixture.only()` with proper UI behavior
+- **Smart Editor Notifications**: Info bars automatically alert you when exclusive tests are present
+- **Visual Indicators**: Clear tooltips and configuration names distinguish exclusive vs. regular tests
 - **Flexible Configuration**: Customize TestCafe commands and parameters through the plugin settings
 - **Integrated Output**: View test results directly in IntelliJ's run tool window
 - **Context Menu Integration**: Right-click to run tests from the context menu
@@ -17,7 +20,7 @@ A powerful IntelliJ IDEA plugin that provides seamless integration with TestCafe
 1. Open IntelliJ IDEA
 2. Go to `File → Settings → Plugins` (or `IntelliJ IDEA → Preferences → Plugins` on macOS)
 3. Click the `Marketplace` tab
-4. Search for "TestCafe Runner"
+4. Search for "TestCafe Support"
 5. Click `Install` and restart the IDE
 
 ### Manual Installation
@@ -38,7 +41,7 @@ A powerful IntelliJ IDEA plugin that provides seamless integration with TestCafe
 
 ### Basic Setup
 
-1. Go to `File → Settings → Tools → TestCafe Runner` (or `IntelliJ IDEA → Preferences → Tools → TestCafe Runner` on macOS)
+1. Go to `File → Settings → Tools → TestCafe Support` (or `IntelliJ IDEA → Preferences → Tools → TestCafe Support` on macOS)
 2. Configure your TestCafe command template (default: `npx testcafe chrome {filePath}`)
 3. Adjust parameters as needed for your project setup
 
@@ -102,6 +105,15 @@ docker run -v $(pwd):/tests testcafe/testcafe chrome /tests/{filePath}
 #### Context Menu
 1. Right-click on any `test()` or `fixture()` line
 2. Select "Run TestCafe Test" or "Run TestCafe Fixture"
+
+#### Exclusive Tests (test.only / fixture.only)
+
+When you use `test.only()` or `fixture.only()` in your TestCafe files:
+
+1. **Info Bar Notification**: An information bar appears at the top of the editor alerting you to exclusive tests
+2. **Smart Play Buttons**: Only exclusive tests show play buttons - non-exclusive tests are automatically hidden
+3. **Visual Indicators**: Tooltips and run configuration names clearly indicate when tests are exclusive
+4. **Proper Behavior**: Only the marked exclusive tests will run, matching TestCafe's intended behavior
 
 ### Viewing Results
 

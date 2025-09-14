@@ -5,7 +5,7 @@
 
     <!-- Public plugin name should be written in Title Case.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-name -->
-    <name>TestCafe Runner</name>
+    <name>TestCafe Support</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
     <vendor url="https://github.com/yourrepo/idea-testcafe-runner" email="support@itdo.at">IT-DO</vendor>
@@ -13,12 +13,14 @@
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-description -->
     <description><![CDATA[
-        <p><strong>Run TestCafe tests directly from IntelliJ IDEA with intuitive play buttons and customizable execution commands.</strong></p>
+        <p><strong>Comprehensive TestCafe support for IntelliJ IDEA with intelligent test execution and exclusive test handling.</strong></p>
 
         <h3>Key Features:</h3>
         <ul>
             <li><strong>Smart Detection:</strong> Automatically finds TestCafe fixtures and tests in .spec.js, .spec.ts files</li>
             <li><strong>One-Click Execution:</strong> Run tests with convenient play buttons next to test declarations</li>
+            <li><strong>Exclusive Test Support:</strong> Intelligent handling of test.only() and fixture.only() with visual indicators</li>
+            <li><strong>Smart Editor Notifications:</strong> Info bars alert when exclusive tests are present</li>
             <li><strong>Flexible Configuration:</strong> Customize TestCafe commands and browser settings</li>
             <li><strong>Integrated Results:</strong> View test output directly in IntelliJ's run tool window</li>
             <li><strong>Context Menu Support:</strong> Right-click to run tests from anywhere</li>
@@ -30,14 +32,11 @@
             <li>Front-end developers using TestCafe for E2E testing</li>
             <li>QA teams running automated browser tests</li>
             <li>Teams wanting seamless IDE integration for test execution</li>
+            <li>Developers who need proper exclusive test (.only) behavior</li>
         </ul>
 
-        <p>Supports TestCafe's full feature set including live mode, parallel execution, and multiple browser testing.</p>
+        <p>Supports TestCafe's full feature set including live mode, parallel execution, exclusive tests, and multiple browser testing.</p>
     ]]></description>
-
-    <!-- Product and plugin compatibility requirements.
-         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
-    <idea-version since-build="251" until-build="251.*"/>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>JavaScript</depends>
@@ -55,7 +54,7 @@
             parentId="tools"
             instance="at.itdo.tcrunner.SettingsConfigurable"
             id="at.itdo.tcrunner.settings"
-            displayName="TestCafe Runner" />
+            displayName="TestCafe Support" />
 
         <!-- Run Configuration -->
         <configurationType
@@ -94,8 +93,8 @@
 
             <action id="TestCafe.Settings"
                     class="at.itdo.tcrunner.actions.SettingsAction"
-                    text="TestCafe Runner Settings..."
-                    description="Configure TestCafe Runner settings">
+                    text="TestCafe Support Settings..."
+                    description="Configure TestCafe Support settings">
             </action>
         </group>
     </actions>

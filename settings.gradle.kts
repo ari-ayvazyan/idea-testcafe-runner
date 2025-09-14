@@ -1,1 +1,1 @@
-rootProject.name = "idea-testcafe-runner"
+rootProject.name = "testcafe-support"
