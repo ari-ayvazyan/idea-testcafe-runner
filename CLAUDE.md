@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is an IntelliJ IDEA plugin that provides seamless integration with TestCafe, allowing developers to run tests directly from the IDE with play buttons and customizable execution commands. The plugin is built using Kotlin/Java and the IntelliJ Platform SDK.
+This is the **TestCafe Support** plugin for IntelliJ IDEA that provides comprehensive TestCafe integration, including intelligent test execution, exclusive test handling (.only), and advanced editor features. The plugin is built using Kotlin/Java and the IntelliJ Platform SDK.
 
 ## Architecture
 
