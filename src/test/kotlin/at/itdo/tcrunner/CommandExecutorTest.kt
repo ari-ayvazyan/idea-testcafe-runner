@@ -1,8 +1,12 @@
 package at.itdo.tcrunner
 
+import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.openapi.util.SystemInfo
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+import java.io.File
 
 class TestCafeCommandExecutorTest {
 
@@ -52,6 +56,34 @@ class TestCafeCommandExecutorTest {
 
         assertEquals("npx testcafe chrome /path/to/test.spec.js", result)
     }
+
+    @Test
+    fun testCommandLineCreationIncludesEnvironment() {
+        val command = "npx testcafe chrome test.spec.js"
+        val workingDir = File("/tmp")
+
+        val commandLine = createCommandLineForTest(command, workingDir)
+
+        // Verify environment variables are included
+        assertTrue(commandLine.environment.isNotEmpty(), "Environment should not be empty")
+        assertTrue(commandLine.environment.containsKey("PATH"), "PATH should be included in environment")
+
+        // Verify working directory is set
+        assertEquals(workingDir, commandLine.workDirectory)
+
+        // Verify parameters are correct based on platform
+        when {
+            SystemInfo.isWindows -> {
+                assertEquals("cmd", commandLine.exePath)
+                assertTrue(commandLine.parametersList.parameters.contains("/c"))
+            }
+            else -> {
+                assertEquals("bash", commandLine.exePath)
+                assertTrue(commandLine.parametersList.parameters.contains("-l"))
+                assertTrue(commandLine.parametersList.parameters.contains("-c"))
+            }
+        }
+    }
 }
 
 // Helper functions that replicate the private methods for testing
@@ -73,4 +105,26 @@ fun buildFileCommandForTest(settings: Settings, filePath: String): String {
     return settings.getCommandTemplate(Settings.CommandType.FILE)
         .replace("{filePath}", filePath)
         .replace("{browser}", settings.browser)
+}
+
+fun createCommandLineForTest(command: String, workingDirectory: File?): GeneralCommandLine {
+    val commandLine = GeneralCommandLine()
+        .withWorkDirectory(workingDirectory)
+        .withEnvironment(System.getenv())
+
+    when {
+        SystemInfo.isWindows -> {
+            commandLine
+                .withExePath("cmd")
+                .withParameters("/c", "echo Working directory: %cd% && $command")
+        }
+        else -> {
+            // Linux/macOS: Use bash as login shell to load full environment
+            commandLine
+                .withExePath("bash")
+                .withParameters("-l", "-c", "echo \"Working directory: \$(pwd)\" && $command")
+        }
+    }
+
+    return commandLine
 }

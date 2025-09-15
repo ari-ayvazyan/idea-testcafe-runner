@@ -12,6 +12,7 @@ import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.util.SystemInfo
 import java.io.File
 
 class CommandExecutor(private val project: Project) {
@@ -79,13 +80,32 @@ class CommandExecutor(private val project: Project) {
         return null
     }
 
+    private fun createCommandLine(command: String, workingDirectory: File?): GeneralCommandLine {
+        val commandLine = GeneralCommandLine()
+            .withWorkDirectory(workingDirectory)
+            .withEnvironment(System.getenv())
+
+        when {
+            SystemInfo.isWindows -> {
+                commandLine
+                    .withExePath("cmd")
+                    .withParameters("/c", "echo Working directory: %cd% && $command")
+            }
+            else -> {
+                // Linux/macOS: Use bash as login shell to load full environment
+                commandLine
+                    .withExePath("bash")
+                    .withParameters("-l", "-c", "echo \"Working directory: \$(pwd)\" && $command")
+            }
+        }
+
+        return commandLine
+    }
+
     private fun executeCommand(command: String, workingDirectory: File?) {
         ApplicationManager.getApplication().executeOnPooledThread {
             try {
-                val commandLine = GeneralCommandLine()
-                    .withWorkDirectory(workingDirectory)
-                    .withExePath("bash")
-                    .withParameters("-c", "echo \"Working directory: $(pwd)\" && $command")
+                val commandLine = createCommandLine(command, workingDirectory)
 
                 val processHandler = ProcessHandlerFactory.getInstance()
                     .createProcessHandler(commandLine)
