@@ -51,7 +51,7 @@ test("Fetch user data", async t => {
     const getUserData = ClientFunction(() => {
         return fetch('/api/users/1').then(r => r.json());
     });
-    
+
     const userData = await getUserData();
     console.log('User data:', userData);
 });
@@ -119,17 +119,13 @@ fixture("Payment Flow Tests")
 
 test("Credit card payment", async t => {
     const { cardNumber, expiryDate, cvv } = t.fixtureCtx.testData;
-    
+
     await t
         .typeText('#card-number', cardNumber)
         .typeText('#expiry-date', expiryDate)
         .typeText('#cvv', cvv)
         .click('#pay-button');
 });
-
-// Fixture with skip and only modifiers
-fixture.only('Priority Tests')
-    .page('https://example.com/important');
 
 test('Critical functionality test', async t => {
     await t.click('#critical-button');
@@ -158,10 +154,6 @@ test('Mobile navigation test', async t => {
         .click('#hamburger-menu')
         .expect(Selector('#mobile-nav').visible)
         .ok();
-});
-
-test.only('Run only this test', async t => {
-    console.log('Only this test will run in the fixture');
 });
 
 test.skip('Skip this specific test', async t => {
