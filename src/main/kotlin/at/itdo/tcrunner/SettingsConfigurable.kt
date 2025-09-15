@@ -26,6 +26,7 @@ class SettingsConfigurable(private val project: Project) : Configurable {
     private val concurrencySpinner = JSpinner(SpinnerNumberModel(1, 1, 10, 1))
     private val timeoutSpinner = JSpinner(SpinnerNumberModel(30000, 1000, 300000, 1000))
     private val filePatternsField = JBTextField()
+    private val workingDirectoryField = JBTextField()
 
     override fun getDisplayName(): String = "TestCafe Runner"
 
@@ -49,6 +50,9 @@ class SettingsConfigurable(private val project: Project) : Configurable {
             .addSeparator()
             .addLabeledComponent(JBLabel("File regex patterns:"), filePatternsField, 1, false)
             .addTooltip("Comma-separated regex patterns to detect TestCafe files (e.g., .*\\.spec\\.(js|ts)$,.*\\.test\\.(js|ts)$)")
+            .addSeparator()
+            .addLabeledComponent(JBLabel("Working directory:"), workingDirectoryField, 1, false)
+            .addTooltip("Default working directory for TestCafe commands (leave empty to detect automatically)")
             .addComponentFillVertically(JPanel(), 0)
             .panel
     }
@@ -62,7 +66,8 @@ class SettingsConfigurable(private val project: Project) : Configurable {
                liveModeBox.isSelected != settings.liveMode ||
                concurrencySpinner.value != settings.concurrency ||
                timeoutSpinner.value != settings.timeout ||
-               filePatternsField.text != settings.filePatterns
+               filePatternsField.text != settings.filePatterns ||
+               workingDirectoryField.text != settings.workingDirectory
     }
 
     override fun apply() {
@@ -78,6 +83,7 @@ class SettingsConfigurable(private val project: Project) : Configurable {
         settings.concurrency = concurrencySpinner.value as Int
         settings.timeout = timeoutSpinner.value as Int
         settings.filePatterns = filePatternsField.text
+        settings.workingDirectory = workingDirectoryField.text
     }
 
     private fun validateCommandTemplates() {
@@ -145,6 +151,7 @@ class SettingsConfigurable(private val project: Project) : Configurable {
         concurrencySpinner.value = settings.concurrency
         timeoutSpinner.value = settings.timeout
         filePatternsField.text = settings.filePatterns
+        workingDirectoryField.text = settings.workingDirectory
     }
 
 }

@@ -10,7 +10,7 @@ class FileDetector(private val project: Project) {
 
     companion object {
         // Default fallback regex patterns if settings are not available
-        private val DEFAULT_PATTERNS = setOf(
+        val DEFAULT_PATTERNS = setOf(
             ".*\\.spec\\.(js|ts)$",
             ".*\\.tests?\\.(js|ts)$",
             ".*-tests?\\.(js|ts)$"

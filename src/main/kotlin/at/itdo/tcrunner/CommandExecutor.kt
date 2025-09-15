@@ -22,12 +22,12 @@ class CommandExecutor(private val project: Project) {
             is Declaration.Fixture -> buildFixtureCommand(declaration, filePath)
         }
 
-        executeCommand(command, File(filePath).parentFile)
+        executeCommand(command, getWorkingDirectory(filePath))
     }
 
     fun executeFile(filePath: String) {
         val command = buildFileCommand(filePath)
-        executeCommand(command, File(filePath).parentFile)
+        executeCommand(command, getWorkingDirectory(filePath))
     }
 
     private fun buildTestCommand(test: Declaration.Test, filePath: String): String {
@@ -53,13 +53,39 @@ class CommandExecutor(private val project: Project) {
             .replace("{browser}", settings.browser)
     }
 
+    private fun getWorkingDirectory(filePath: String): File {
+        val settings = Settings.getInstance(project)
+        return when {
+            settings.workingDirectory.isNotBlank() -> File(settings.workingDirectory)
+            else -> findNodeProjectRoot(File(filePath)) ?: File(project.basePath ?: ".")
+        }
+    }
+
+    private fun findNodeProjectRoot(startFile: File): File? {
+        var currentDir = if (startFile.isDirectory) startFile else startFile.parentFile
+
+        while (currentDir != null) {
+            try {
+                // Check for package.json or node_modules (safely)
+                if (File(currentDir, "package.json").exists() || File(currentDir, "node_modules").exists()) {
+                    return currentDir
+                }
+            } catch (e: Exception) {
+                // Skip directories that cause path issues and continue up the tree
+            }
+            currentDir = currentDir.parentFile
+        }
+
+        return null
+    }
+
     private fun executeCommand(command: String, workingDirectory: File?) {
         ApplicationManager.getApplication().executeOnPooledThread {
             try {
                 val commandLine = GeneralCommandLine()
                     .withWorkDirectory(workingDirectory)
                     .withExePath("bash")
-                    .withParameters("-c", command)
+                    .withParameters("-c", "echo \"Working directory: $(pwd)\" && $command")
 
                 val processHandler = ProcessHandlerFactory.getInstance()
                     .createProcessHandler(commandLine)

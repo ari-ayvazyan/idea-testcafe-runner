@@ -20,7 +20,8 @@
       "Bash(dir)",
       "Bash(findstr:*)",
       "Bash(.gradlew test:*)",
-      "Bash(dir D:workspaceidea-testcafe-runnerbuildreportsteststest)"
+      "Bash(dir D:workspaceidea-testcafe-runnerbuildreportsteststest)",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": []
