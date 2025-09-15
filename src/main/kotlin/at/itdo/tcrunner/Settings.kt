@@ -19,7 +19,8 @@ class Settings : PersistentStateComponent<Settings> {
     var browser: String = "chrome"
     var concurrency: Int = 1
     var timeout: Int = 30000
-    var filePatterns: String = ".*\\.spec\\.(js|ts)$,.*\\.test\\.(js|ts)$,.*-test\\.(js|ts)$"
+    var filePatterns: String = FileDetector.DEFAULT_PATTERNS.joinToString(",")
+    var workingDirectory: String = ""
 
     companion object {
         fun getInstance(project: Project): Settings {

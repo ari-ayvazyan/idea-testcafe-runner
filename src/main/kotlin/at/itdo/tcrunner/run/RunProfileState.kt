@@ -1,8 +1,8 @@
 package at.itdo.tcrunner.run
 
 import at.itdo.tcrunner.Settings
-import at.itdo.tcrunner.run.parsing.TestCafeProcessWrapper
 import at.itdo.tcrunner.run.parsing.ConsoleProperties
+import at.itdo.tcrunner.run.parsing.TestCafeProcessWrapper
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
@@ -52,10 +52,10 @@ class RunProfileState(
         val settings = Settings.getInstance(project)
 
         // Determine working directory
-        val workingDir = if (configuration.getWorkingDirectory().isNotBlank()) {
-            File(configuration.getWorkingDirectory())
-        } else {
-            File(project.basePath ?: ".")
+        val workingDir = when {
+            configuration.getWorkingDirectory().isNotBlank() -> File(configuration.getWorkingDirectory())
+            settings.workingDirectory.isNotBlank() -> File(settings.workingDirectory)
+            else -> findNodeProjectRoot(File(configuration.getScriptPath())) ?: File(project.basePath ?: ".")
         }
 
         // Build command based on configuration
@@ -64,7 +64,7 @@ class RunProfileState(
         return GeneralCommandLine()
             .withWorkDirectory(workingDir)
             .withExePath("bash")
-            .withParameters("-c", command)
+            .withParameters("-c", "echo \"Working directory: $(pwd)\" && $command")
     }
 
     private fun buildTestCafeCommand(settings: Settings): String {
@@ -99,5 +99,21 @@ class RunProfileState(
             .replace("{fixtureName}", configuration.getFixtureFilter())
             .replace("{browser}", browser)
             .replace("{workingDirectory}", configuration.getWorkingDirectory())
+    }
+
+    private fun findNodeProjectRoot(startFile: File): File? {
+        var currentDir = if (startFile.isDirectory) startFile else startFile.parentFile
+        try {
+            while (currentDir != null) {
+                // Check for package.json or node_modules
+                if (File(currentDir, "package.json").exists() || File(currentDir, "node_modules").exists()) {
+                    return currentDir
+                }
+                currentDir = currentDir.parentFile
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
     }
 }
