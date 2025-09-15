@@ -1,7 +1,7 @@
 package at.itdo.tcrunner.run.parsing
 
-import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
+import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.process.ProcessOutputTypes
 import com.intellij.openapi.util.Key
 
@@ -11,7 +11,7 @@ import com.intellij.openapi.util.Key
 class ProcessOutputHandler(
     private val testFilePath: String,
     private val eventEmitter: TeamCityEventEmitter
-) : ProcessAdapter() {
+) : ProcessListener {
 
     private lateinit var parser: TestCafeOutputParser
 
@@ -26,10 +26,18 @@ class ProcessOutputHandler(
         }
     }
 
+    override fun startNotified(event: ProcessEvent) {
+        // No action needed on process start
+    }
+
     override fun processTerminated(event: ProcessEvent) {
         if (::parser.isInitialized) {
             parser.finalizeParsing()
         }
+    }
+
+    override fun processWillTerminate(event: ProcessEvent, willBeDestroyed: Boolean) {
+        // No action needed before process termination
     }
 
     private fun initializeParserIfNeeded(event: ProcessEvent) {
