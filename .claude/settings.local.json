@@ -21,7 +21,8 @@
       "Bash(findstr:*)",
       "Bash(.gradlew test:*)",
       "Bash(dir D:workspaceidea-testcafe-runnerbuildreportsteststest)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(git tag:*)"
     ],
     "deny": [],
     "ask": []
