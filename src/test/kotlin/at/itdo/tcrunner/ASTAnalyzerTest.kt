@@ -20,7 +20,7 @@ class TestCafeASTAnalyzerTest {
         val content = """
             fixture('Login Tests')
                 .page('https://example.com/login');
-            
+
             test('User can login', async t => {
                 // test content
             });
@@ -83,7 +83,7 @@ class TestCafeASTAnalyzerTest {
     fun testFixtureWithoutPage() {
         val content = """
             fixture('Simple fixture');
-            
+
             test('Simple test', async t => {
                 // test content
             });
@@ -95,6 +95,29 @@ class TestCafeASTAnalyzerTest {
         assertNotNull(fixture)
         assertEquals("Simple fixture", fixture!!.name)
         assertNull(fixture.page)
+    }
+
+    @Test
+    fun testTemplateLiteralQuotes() {
+        val content = """
+            fixture`Catheter List Widget`;
+
+            test`User can interact with catheter list`, async t => {
+                // test content
+            });
+        """.trimIndent()
+
+        val declarations = analyzer.parseTestCafeContent(content)
+
+        assertEquals(2, declarations.size)
+
+        val fixture = declarations.filterIsInstance<MockTestCafeDeclaration.Fixture>().firstOrNull()
+        assertNotNull(fixture)
+        assertEquals("Catheter List Widget", fixture!!.name)
+
+        val test = declarations.filterIsInstance<MockTestCafeDeclaration.Test>().firstOrNull()
+        assertNotNull(test)
+        assertEquals("User can interact with catheter list", test!!.name)
     }
 }
 
@@ -122,15 +145,15 @@ sealed class MockTestCafeDeclaration(
 fun ASTAnalyzer.parseTestCafeContent(content: String): List<MockTestCafeDeclaration> {
     val declarations = mutableListOf<MockTestCafeDeclaration>()
 
-    // Use the same patterns from the original class
-    val fixturePattern = java.util.regex.Pattern.compile("fixture\\s*\\(\\s*['\"]([^'\"]*)['\"]")
-    val testPattern = java.util.regex.Pattern.compile("test\\s*\\(\\s*['\"]([^'\"]*)['\"]")
-    val pagePattern = java.util.regex.Pattern.compile("\\.page\\s*\\(\\s*['\"]([^'\"]*)['\"]")
+    // Use the same patterns from the original class (support both () and `` syntax)
+    val fixturePattern = java.util.regex.Pattern.compile("fixture\\s*(?:\\(\\s*['\"]([^'\"]*?)['\"]|`([^`]*?)`)")
+    val testPattern = java.util.regex.Pattern.compile("test\\s*(?:\\(\\s*['\"]([^'\"]*?)['\"]|`([^`]*?)`)")
+    val pagePattern = java.util.regex.Pattern.compile("\\.page\\s*\\(\\s*['\"]([^'\"]*?)['\"]\\s*\\)")
 
     // Find fixtures
     val fixtureMatcher = fixturePattern.matcher(content)
     while (fixtureMatcher.find()) {
-        val name = fixtureMatcher.group(1)
+        val name = fixtureMatcher.group(1) ?: fixtureMatcher.group(2) ?: ""
         val startOffset = fixtureMatcher.start()
         val endOffset = fixtureMatcher.end()
 
@@ -150,7 +173,7 @@ fun ASTAnalyzer.parseTestCafeContent(content: String): List<MockTestCafeDeclarat
     // Find tests
     val testMatcher = testPattern.matcher(content)
     while (testMatcher.find()) {
-        val name = testMatcher.group(1)
+        val name = testMatcher.group(1) ?: testMatcher.group(2) ?: ""
         val startOffset = testMatcher.start()
         val endOffset = testMatcher.end()
 

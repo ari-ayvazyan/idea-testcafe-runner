@@ -6,18 +6,18 @@ import java.util.regex.Pattern
 class ASTAnalyzer {
 
     companion object {
-        // Regular patterns - explicitly exclude .only variants
-        private val FIXTURE_PATTERN = Pattern.compile("(?<!\\.)fixture(?!\\.only)\\s*\\(\\s*['\"]([^'\"]*)['\"]")
-        private val TEST_PATTERN = Pattern.compile("(?<!\\.)test(?!\\.only)\\s*\\(\\s*['\"]([^'\"]*)['\"]")
+        // Regular patterns - explicitly exclude .only variants (support both () and `` syntax)
+        private val FIXTURE_PATTERN = Pattern.compile("(?<!\\.)fixture(?!\\.only)\\s*(?:\\(\\s*['\"]([^'\"]*?)['\"]|`([^`]*?)`)")
+        private val TEST_PATTERN = Pattern.compile("(?<!\\.)test(?!\\.only)\\s*(?:\\(\\s*['\"]([^'\"]*?)['\"]|`([^`]*?)`)")
 
-        // Only patterns with name capture
-        private val FIXTURE_ONLY_PATTERN_WITH_NAME = Pattern.compile("fixture\\.only\\s*\\(\\s*['\"]([^'\"]*)['\"]")
-        private val TEST_ONLY_PATTERN_WITH_NAME = Pattern.compile("test\\.only\\s*\\(\\s*['\"]([^'\"]*)['\"]")
+        // Only patterns with name capture (support both () and `` syntax)
+        private val FIXTURE_ONLY_PATTERN_WITH_NAME = Pattern.compile("fixture\\.only\\s*(?:\\(\\s*['\"]([^'\"]*?)['\"]|`([^`]*?)`)")
+        private val TEST_ONLY_PATTERN_WITH_NAME = Pattern.compile("test\\.only\\s*(?:\\(\\s*['\"]([^'\"]*?)['\"]|`([^`]*?)`)")
 
         // Other patterns
-        private val PAGE_PATTERN = Pattern.compile("\\.page\\s*\\(\\s*['\"]([^'\"]*)['\"]")
-        private val FIXTURE_ONLY_PATTERN = Pattern.compile("fixture\\.only\\s*\\(")
-        private val TEST_ONLY_PATTERN = Pattern.compile("test\\.only\\s*\\(")
+        private val PAGE_PATTERN = Pattern.compile("\\.page\\s*\\(\\s*['\"]([^'\"]*?)['\"]\\s*\\)")
+        private val FIXTURE_ONLY_PATTERN = Pattern.compile("fixture\\.only\\s*(?:\\(|`)")
+        private val TEST_ONLY_PATTERN = Pattern.compile("test\\.only\\s*(?:\\(|`)")
     }
 
     fun findTestCafeDeclarations(psiFile: PsiFile): List<Declaration> {
@@ -27,7 +27,7 @@ class ASTAnalyzer {
         // Find fixtures (including fixture.only)
         val fixtureOnlyMatcher = FIXTURE_ONLY_PATTERN_WITH_NAME.matcher(text)
         while (fixtureOnlyMatcher.find()) {
-            val name = fixtureOnlyMatcher.group(1)
+            val name = fixtureOnlyMatcher.group(1) ?: fixtureOnlyMatcher.group(2) ?: ""
             val startOffset = fixtureOnlyMatcher.start()
             val endOffset = fixtureOnlyMatcher.end()
 
@@ -51,7 +51,7 @@ class ASTAnalyzer {
         // Find regular fixtures (not .only)
         val fixtureMatcher = FIXTURE_PATTERN.matcher(text)
         while (fixtureMatcher.find()) {
-            val name = fixtureMatcher.group(1)
+            val name = fixtureMatcher.group(1) ?: fixtureMatcher.group(2) ?: ""
             val startOffset = fixtureMatcher.start()
             val endOffset = fixtureMatcher.end()
 
@@ -75,7 +75,7 @@ class ASTAnalyzer {
         // Find tests (including test.only)
         val testOnlyMatcher = TEST_ONLY_PATTERN_WITH_NAME.matcher(text)
         while (testOnlyMatcher.find()) {
-            val name = testOnlyMatcher.group(1)
+            val name = testOnlyMatcher.group(1) ?: testOnlyMatcher.group(2) ?: ""
             val startOffset = testOnlyMatcher.start()
             val endOffset = testOnlyMatcher.end()
 
@@ -95,7 +95,7 @@ class ASTAnalyzer {
         // Find regular tests (not .only)
         val testMatcher = TEST_PATTERN.matcher(text)
         while (testMatcher.find()) {
-            val name = testMatcher.group(1)
+            val name = testMatcher.group(1) ?: testMatcher.group(2) ?: ""
             val startOffset = testMatcher.start()
             val endOffset = testMatcher.end()
 
