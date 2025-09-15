@@ -15,6 +15,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for parallel test execution
 - Advanced filtering and search capabilities in test results
 
+## [0.2.0] - 2025-09-15
+
+### Added
+- **Plugin branding**: Added official logos and visual branding for better plugin identification
+- **Enhanced visual identity**: Plugin now includes proper logos in multiple formats
+
+### Fixed
+- **Fixture detection improvements**: Fixed fixture style recognition that was previously not being detected properly
+- **Cross-platform compatibility**: Fixed path handling issues that occurred on Unix systems
+- **Working directory resolution**: Fixed working directory issues for better test execution reliability
+
+### Changed
+- **Version management**: Removed version ceiling constraints for better IDE compatibility
+- **Documentation updates**: Updated README files with current plugin information
+
+### Technical Details
+- Improved fixture parsing with better regex patterns
+- Enhanced path resolution for cross-platform support
+- Updated plugin manifest and branding assets
+- Streamlined development environment setup
+
 ## [0.1.1] - 2025-09-14
 
 ### Fixed
