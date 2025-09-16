@@ -77,7 +77,7 @@ class RunProfileState(
                 // Linux/macOS: Use bash as login shell to load full environment
                 commandLine
                     .withExePath("bash")
-                    .withParameters("-l", "-c", "echo \"Working directory: \$(pwd)\" && $command")
+                    .withParameters("-l", "-i", "-c", "echo \"Working directory: \$(pwd)\" && $command")
             }
         }
     }
