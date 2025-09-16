@@ -101,9 +101,11 @@ class TestCafeOutputParserTest {
     @Test
     fun `should match test result patterns correctly`() {
         // Test pattern matching
-        assertTrue(" √ Simple test with console log".matches(Regex(" [√×] .*")), "Pass line should match test result pattern")
-        assertTrue(" × Simple test 3 with err".matches(Regex(" [√×] .*")), "Fail line should match test result pattern")
-        assertFalse(" Sample Test".matches(Regex(" [√×] .*")), "Fixture line should not match test result pattern")
+        assertTrue(" √ Simple test with console log".matches(Regex(" (?:√|×|✖️|✓) .*")), "Pass line should match test result pattern")
+        assertTrue(" × Simple test 3 with err".matches(Regex(" (?:√|×|✖️|✓) .*")), "Fail line should match test result pattern")
+        assertTrue(" ✖️ Ubuntu failure format".matches(Regex(" (?:√|×|✖️|✓) .*")), "Ubuntu fail line should match test result pattern")
+        assertTrue(" ✓ Ubuntu success format".matches(Regex(" (?:√|×|✖️|✓) .*")), "Ubuntu pass line should match test result pattern")
+        assertFalse(" Sample Test".matches(Regex(" (?:√|×|✖️|✓) .*")), "Fixture line should not match test result pattern")
 
         // Test parser logic
         scenarioBuilder
@@ -113,6 +115,29 @@ class TestCafeOutputParserTest {
             .execute()
 
         eventCollector.assertHasFailedTest("Simple test 3 with err")
+    }
+
+    @Test
+    fun `should handle Ubuntu test failure format with ✖️ character`() {
+        scenarioBuilder
+            .withFixture("Catheter List Widget")
+            .withLine(" ✖️ Displays a filtered list of active catheters (screenshots: /home/ari/IdeaProjects/locatedcare-ou/modules/frontend/testcafe/reports/media/2025-09-16_19-29-13/Catheter List Widget/Displays a filtered list of active catheters/Chrome_139.0.0.0_Ubuntu_24.04/t1-ferrors/1-q1.png)")
+            .withLine(" 1/3 failed (2s)")
+            .execute()
+
+        eventCollector.assertHasFailedTest("Displays a filtered list of active catheters (screenshots: /home/ari/IdeaProjects/locatedcare-ou/modules/frontend/testcafe/reports/media/2025-09-16_19-29-13/Catheter List Widget/Displays a filtered list of active catheters/Chrome_139.0.0.0_Ubuntu_24.04/t1-ferrors/1-q1.png)")
+    }
+
+    @Test
+    fun `should handle Ubuntu test success format with ✓ character`() {
+        scenarioBuilder
+            .withFixture("Catheter List Widget")
+            .withLine(" ✓ Displays a filtered list of active catheters")
+            .withLine(" 1 passed (2s)")
+            .execute()
+
+        assertEquals(1, eventCollector.getPassedTests().size)
+        assertEquals("Displays a filtered list of active catheters", eventCollector.getPassedTests().first().testName)
     }
 
     /**
