@@ -13,6 +13,7 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.testframework.sm.SMTestRunnerConnectionUtil
 import com.intellij.openapi.util.SystemInfo
+import com.intellij.util.EnvironmentUtil
 import java.io.File
 
 class RunProfileState(
@@ -64,7 +65,7 @@ class RunProfileState(
 
         val commandLine = GeneralCommandLine()
             .withWorkDirectory(workingDir)
-            .withEnvironment(System.getenv())
+            .withEnvironment(EnvironmentUtil.getEnvironmentMap())
 
         return when {
             SystemInfo.isWindows -> {
