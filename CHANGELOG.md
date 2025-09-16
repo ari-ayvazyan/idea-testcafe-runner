@@ -15,6 +15,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for parallel test execution
 - Advanced filtering and search capabilities in test results
 
+## [0.2.1] - 2025-09-16
+
+### Fixed
+- **Windows compatibility**: Fixed command execution issues on Windows systems
+- **Cross-platform support**: Enhanced cross-platform compatibility with improved process handling and path resolution
+- **Deprecated API usage**: Updated deprecated class usage in ProcessOutputHandler for better IDE compatibility
+
+### Removed
+- **Code cleanup**: Removed unused classes to reduce plugin size and complexity
+
+### Technical Details
+- Improved RunProfileState.kt with better Windows command execution
+- Enhanced cross-platform process spawning with proper environment handling
+- Updated ProcessOutputHandler to use current API standards instead of deprecated classes
+- Streamlined codebase by removing unnecessary components
+
 ## [0.2.0] - 2025-09-15
 
 ### Added
