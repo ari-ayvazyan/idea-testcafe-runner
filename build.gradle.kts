@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "at.itdo"
-version = "0.2.1-dev"
+version = "0.2.1"
 repositories {
     mavenCentral()
     intellijPlatform {
