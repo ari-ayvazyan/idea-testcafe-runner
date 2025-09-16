@@ -32,8 +32,17 @@ class TestCafeLineClassifier {
     fun parseTestResult(line: String): TestResult? {
         if (!isTestResult(line)) return null
 
-        val isSuccess = line.contains("√")
-        val testName = line.substring(3).trim() // Remove " √ " or " × "
+        val isSuccess = line.contains("√") || line.contains("✓")
+
+        // Find the test name after the symbol and space
+        val testName = when {
+            line.startsWith(" √ ") -> line.substring(3).trim()
+            line.startsWith(" × ") -> line.substring(3).trim()
+            line.startsWith(" ✓ ") -> line.substring(3).trim()
+            line.startsWith(" ✖️ ") -> line.substring(4).trim() // ✖️ is 2 chars (+ emoji variation)
+            else -> line.substring(3).trim() // fallback
+        }
+
         return TestResult(isSuccess, testName)
     }
 
@@ -75,7 +84,7 @@ class TestCafeLineClassifier {
     }
 
     private fun isTestResult(line: String): Boolean {
-        return line.matches(Regex(" [√×] .*"))
+        return line.matches(Regex(" (?:√|×|✖️|✓) .*"))
     }
 
     private fun isTestRunSummary(line: String): Boolean {
