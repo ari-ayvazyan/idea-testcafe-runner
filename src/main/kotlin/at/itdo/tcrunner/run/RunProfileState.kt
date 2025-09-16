@@ -69,8 +69,8 @@ class RunProfileState(
         return when {
             SystemInfo.isWindows -> {
                 commandLine
-                    .withExePath("cmd")
-                    .withParameters("/c", "echo Working directory: %cd% && $command")
+                    .withExePath("powershell")
+                    .withParameters("-Command", "Write-Host \"Working directory: \$(Get-Location)\"; $command")
             }
             else -> {
                 // Linux/macOS: Use bash as login shell to load full environment
