@@ -12,6 +12,7 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.testframework.sm.SMTestRunnerConnectionUtil
+import com.intellij.openapi.util.SystemInfo
 import java.io.File
 
 class RunProfileState(
@@ -61,10 +62,23 @@ class RunProfileState(
         // Build command based on configuration
         val command = buildTestCafeCommand(settings)
 
-        return GeneralCommandLine()
+        val commandLine = GeneralCommandLine()
             .withWorkDirectory(workingDir)
-            .withExePath("bash")
-            .withParameters("-c", "echo \"Working directory: $(pwd)\" && $command")
+            .withEnvironment(System.getenv())
+
+        return when {
+            SystemInfo.isWindows -> {
+                commandLine
+                    .withExePath("cmd")
+                    .withParameters("/c", "echo Working directory: %cd% && $command")
+            }
+            else -> {
+                // Linux/macOS: Use bash as login shell to load full environment
+                commandLine
+                    .withExePath("bash")
+                    .withParameters("-l", "-c", "echo \"Working directory: \$(pwd)\" && $command")
+            }
+        }
     }
 
     private fun buildTestCafeCommand(settings: Settings): String {
