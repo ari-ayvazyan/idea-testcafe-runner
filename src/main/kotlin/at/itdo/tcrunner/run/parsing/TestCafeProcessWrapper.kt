@@ -1,6 +1,9 @@
 package at.itdo.tcrunner.run.parsing
 
-import com.intellij.execution.process.*
+import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.execution.process.KillableColoredProcessHandler
+import com.intellij.execution.process.ProcessHandler
+import com.intellij.openapi.project.Project
 
 /**
  * Factory for creating TestCafe process handlers with SM Test Runner integration
@@ -8,16 +11,15 @@ import com.intellij.execution.process.*
 object TestCafeProcessWrapper {
 
     fun createProcessHandler(
-        process: Process,
-        commandLine: String,
+        project: Project,
+        commandLine: GeneralCommandLine,
         testFilePath: String
     ): ProcessHandler {
-        val processHandler = KillableColoredProcessHandler(process, commandLine)
+        val processHandler = KillableColoredProcessHandler(commandLine)
         val eventEmitter = TeamCityEventEmitter()
-        val outputHandler = ProcessOutputHandler(testFilePath, eventEmitter)
+        val outputHandler = ProcessOutputHandler(project, testFilePath, eventEmitter)
 
         processHandler.addProcessListener(outputHandler)
         return processHandler
     }
 }
-

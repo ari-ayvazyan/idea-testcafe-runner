@@ -27,6 +27,7 @@ class SettingsConfigurable(private val project: Project) : Configurable {
     private val timeoutSpinner = JSpinner(SpinnerNumberModel(30000, 1000, 300000, 1000))
     private val filePatternsField = JBTextField()
     private val workingDirectoryField = JBTextField()
+    private val debugModeBox = JBCheckBox("Enable debug logging")
 
     override fun getDisplayName(): String = "TestCafe Runner"
 
@@ -53,6 +54,9 @@ class SettingsConfigurable(private val project: Project) : Configurable {
             .addSeparator()
             .addLabeledComponent(JBLabel("Working directory:"), workingDirectoryField, 1, false)
             .addTooltip("Default working directory for TestCafe commands (leave empty to detect automatically)")
+            .addSeparator()
+            .addComponent(debugModeBox, 1)
+            .addTooltip("Enable verbose logging for debugging the plugin")
             .addComponentFillVertically(JPanel(), 0)
             .panel
     }
@@ -67,7 +71,8 @@ class SettingsConfigurable(private val project: Project) : Configurable {
                concurrencySpinner.value != settings.concurrency ||
                timeoutSpinner.value != settings.timeout ||
                filePatternsField.text != settings.filePatterns ||
-               workingDirectoryField.text != settings.workingDirectory
+               workingDirectoryField.text != settings.workingDirectory ||
+               debugModeBox.isSelected != settings.debugMode
     }
 
     override fun apply() {
@@ -84,6 +89,7 @@ class SettingsConfigurable(private val project: Project) : Configurable {
         settings.timeout = timeoutSpinner.value as Int
         settings.filePatterns = filePatternsField.text
         settings.workingDirectory = workingDirectoryField.text
+        settings.debugMode = debugModeBox.isSelected
     }
 
     private fun validateCommandTemplates() {
@@ -152,6 +158,7 @@ class SettingsConfigurable(private val project: Project) : Configurable {
         timeoutSpinner.value = settings.timeout
         filePatternsField.text = settings.filePatterns
         workingDirectoryField.text = settings.workingDirectory
+        debugModeBox.isSelected = settings.debugMode
     }
 
 }

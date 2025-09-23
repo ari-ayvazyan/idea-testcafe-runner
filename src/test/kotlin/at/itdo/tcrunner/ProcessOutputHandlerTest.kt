@@ -7,6 +7,8 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessOutputTypes
 import io.mockk.every
 import io.mockk.mockk
+import com.intellij.openapi.project.Project
+import io.mockk.mockkObject
 import io.mockk.slot
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -18,14 +20,22 @@ class ProcessOutputHandlerTest {
     private lateinit var processEvent: ProcessEvent
     private lateinit var capturedOutput: MutableList<String>
     private val testFilePath = "D:/workspace/idea-testcafe-runner/testcafe/tests/simple.test.js"
+    private lateinit var project: Project
 
     @BeforeEach
     fun setUp() {
+        project = mockk<Project>(relaxed = true)
         capturedOutput = mutableListOf()
         processHandler = mockk<ProcessHandler>()
         processEvent = mockk<ProcessEvent>()
 
         every { processEvent.processHandler } returns processHandler
+
+        // Mock the settings service
+        val settings = mockk<Settings>(relaxed = true)
+        mockkObject(Settings.Companion)
+        every { Settings.getInstance(project) } returns settings
+        every { settings.debugMode } returns true
 
         // Capture all TeamCity service messages
         val messageSlot = slot<String>()
@@ -39,7 +49,7 @@ class ProcessOutputHandlerTest {
         println("=== ProcessOutputHandler Test: Complete TestCafe Output Processing ===")
 
         val eventEmitter = TeamCityEventEmitter()
-        val handler = ProcessOutputHandler(testFilePath, eventEmitter)
+        val handler = ProcessOutputHandler(project, testFilePath, eventEmitter)
 
         eventEmitter.setCurrentProcessEvent(processEvent)
 

@@ -21,6 +21,7 @@ class Settings : PersistentStateComponent<Settings> {
     var timeout: Int = 30000
     var filePatterns: String = FileDetector.DEFAULT_PATTERNS.joinToString(",")
     var workingDirectory: String = ""
+    var debugMode: Boolean = false
 
     companion object {
         fun getInstance(project: Project): Settings {

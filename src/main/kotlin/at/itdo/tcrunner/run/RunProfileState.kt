@@ -6,6 +6,7 @@ import at.itdo.tcrunner.run.parsing.TestCafeProcessWrapper
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
+import at.itdo.tcrunner.util.TCLogger
 import com.intellij.execution.configurations.CommandLineState
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.ProcessHandler
@@ -24,12 +25,15 @@ class RunProfileState(
     @Throws(ExecutionException::class)
     override fun startProcess(): ProcessHandler {
         val commandLine = createCommandLine()
+        TCLogger.debug(configuration.project, "Executing command: ${commandLine.commandLineString}")
 
-        // Create process and wrap it with TestCafe service message handler
-        val process = commandLine.createProcess()
+        // By using the KillableColoredProcessHandler(commandLine) constructor,
+        // we defer the actual process creation from the Event Dispatch Thread (EDT),
+        // preventing UI freezes when the run configuration is executed.
+        // The process is started by the framework on a background thread.
         return TestCafeProcessWrapper.createProcessHandler(
-            process,
-            commandLine.commandLineString,
+            configuration.project,
+            commandLine,
             configuration.getScriptPath()
         )
     }
@@ -59,6 +63,7 @@ class RunProfileState(
             settings.workingDirectory.isNotBlank() -> File(settings.workingDirectory)
             else -> findNodeProjectRoot(File(configuration.getScriptPath())) ?: File(project.basePath ?: ".")
         }
+        TCLogger.debug(project, "Working directory: ${workingDir.absolutePath}")
 
         // Build command based on configuration
         val command = buildTestCafeCommand(settings)
@@ -83,22 +88,33 @@ class RunProfileState(
     }
 
     private fun buildTestCafeCommand(settings: Settings): String {
+        val project = configuration.project
         // Get custom command or determine appropriate default template
         val command = configuration.getCustomCommand().ifBlank {
             // Determine command type and get appropriate template from settings
             when {
-                configuration.getTestFilter()
-                    .isNotBlank() -> settings.getCommandTemplate(Settings.CommandType.TEST)
+                configuration.getTestFilter().isNotBlank() -> {
+                    TCLogger.debug(project, "Using TEST command template")
+                    settings.getCommandTemplate(Settings.CommandType.TEST)
+                }
 
-                configuration.getFixtureFilter()
-                    .isNotBlank() -> settings.getCommandTemplate(Settings.CommandType.FIXTURE)
+                configuration.getFixtureFilter().isNotBlank() -> {
+                    TCLogger.debug(project, "Using FIXTURE command template")
+                    settings.getCommandTemplate(Settings.CommandType.FIXTURE)
+                }
 
-                else -> settings.getCommandTemplate(Settings.CommandType.FILE)
+                else -> {
+                    TCLogger.debug(project, "Using FILE command template")
+                    settings.getCommandTemplate(Settings.CommandType.FILE)
+                }
             }
         }
+        TCLogger.debug(project, "Raw command: $command")
 
         // Always use replaceVariables on the command
-        return replaceVariables(command)
+        val finalCommand = replaceVariables(command)
+        TCLogger.debug(project, "Final command after variable replacement: $finalCommand")
+        return finalCommand
     }
 
     private fun replaceVariables(command: String): String {

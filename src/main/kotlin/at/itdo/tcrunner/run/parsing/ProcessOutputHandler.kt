@@ -1,14 +1,17 @@
 package at.itdo.tcrunner.run.parsing
 
+import at.itdo.tcrunner.util.TCLogger
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.process.ProcessOutputTypes
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 
 /**
  * Handles process output and delegates to TestCafe parser
  */
 class ProcessOutputHandler(
+    private val project: Project,
     private val testFilePath: String,
     private val eventEmitter: TeamCityEventEmitter
 ) : ProcessListener {
@@ -16,10 +19,12 @@ class ProcessOutputHandler(
     private lateinit var parser: TestCafeOutputParser
 
     override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
+        val text = event.text
+        TCLogger.debug(project, "Raw output ($outputType): $text")
+
         if (outputType == ProcessOutputTypes.STDOUT && !eventEmitter.isProcessingServiceMessage()) {
             initializeParserIfNeeded(event)
 
-            val text = event.text
             if (isServiceMessage(text)) return
 
             processTextLines(text)
