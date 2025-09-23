@@ -29,6 +29,9 @@ object TeamCityServiceMessageFormatter {
     fun testStdOut(name: String, out: String): String =
         "##teamcity[testStdOut name='${escapeValue(name)}' out='${escapeValue(out)}']"
 
+    fun buildProblem(description: String, identity: String): String =
+        "##teamcity[buildProblem description='${escapeValue(description)}' identity='${escapeValue(identity)}']"
+
     private fun escapeValue(value: String): String {
         return value
             .replace("|", "||")

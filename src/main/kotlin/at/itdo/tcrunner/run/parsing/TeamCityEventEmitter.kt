@@ -3,6 +3,7 @@ package at.itdo.tcrunner.run.parsing
 import at.itdo.tcrunner.run.parsing.TeamCityServiceMessageFormatter.testFailed
 import at.itdo.tcrunner.run.parsing.TeamCityServiceMessageFormatter.testFinished
 import at.itdo.tcrunner.run.parsing.TeamCityServiceMessageFormatter.testRunStarted
+import at.itdo.tcrunner.run.parsing.TeamCityServiceMessageFormatter.buildProblem
 import at.itdo.tcrunner.run.parsing.TeamCityServiceMessageFormatter.testStarted
 import at.itdo.tcrunner.run.parsing.TeamCityServiceMessageFormatter.testStdOut
 import at.itdo.tcrunner.run.parsing.TeamCityServiceMessageFormatter.testSuiteFinished
@@ -82,6 +83,10 @@ class TeamCityEventEmitter : TestEventEmitter {
 
         testStartTimes.remove(testName)
         emitServiceMessage(testFinished(testName, calculatedDuration))
+    }
+
+    fun emitBuildProblem(description: String, identity: String) {
+        emitServiceMessage(buildProblem(description, identity))
     }
 
     override fun emitTestFailed(testName: String, messages: String, duration: String) {

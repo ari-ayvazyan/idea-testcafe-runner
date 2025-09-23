@@ -17,6 +17,19 @@ object TestCafeProcessWrapper {
         val outputHandler = ProcessOutputHandler(testFilePath, eventEmitter)
 
         processHandler.addProcessListener(outputHandler)
+
+        // Add a listener to handle the process exit code
+        processHandler.addProcessListener(object : ProcessAdapter() {
+            override fun processTerminated(event: ProcessEvent) {
+                if (event.exitCode != 0) {
+                    eventEmitter.emitBuildProblem(
+                        "TestCafe process exited with non-zero exit code: ${event.exitCode}",
+                        "testcafe-exit-code-${event.exitCode}"
+                    )
+                }
+            }
+        })
+
         return processHandler
     }
 }
