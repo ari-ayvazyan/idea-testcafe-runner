@@ -66,6 +66,7 @@ class RunProfileState(
         val commandLine = GeneralCommandLine()
             .withWorkDirectory(workingDir)
             .withEnvironment(EnvironmentUtil.getEnvironmentMap())
+            .withEnvironment("COLUMNS", "1000")
 
         return when {
             SystemInfo.isWindows -> {
