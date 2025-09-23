@@ -65,7 +65,8 @@ class RunProfileState(
 
         val commandLine = GeneralCommandLine()
             .withWorkDirectory(workingDir)
-            .withEnvironment(EnvironmentUtil.getEnvironmentMap())
+            .withEnvironment(configuration.getEnvs())
+            .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
 
         return when {
             SystemInfo.isWindows -> {

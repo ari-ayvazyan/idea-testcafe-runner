@@ -2,6 +2,7 @@ package at.itdo.tcrunner.run
 
 import com.intellij.execution.configurations.RunConfigurationOptions
 import com.intellij.openapi.components.StoredProperty
+import com.intellij.util.xmlb.annotations.OptionTag
 
 class RunConfigurationOptions : RunConfigurationOptions() {
 
@@ -13,6 +14,9 @@ class RunConfigurationOptions : RunConfigurationOptions() {
     private val liveMode: StoredProperty<Boolean> = property(false).provideDelegate(this, "liveMode")
     private val customCommand: StoredProperty<String?> = string("").provideDelegate(this, "customCommand")
     private val workingDirectory: StoredProperty<String?> = string("").provideDelegate(this, "workingDirectory")
+    @get:OptionTag("envs")
+    var envs: MutableMap<String, String> by linkedMap()
+
 
     fun getScriptPath(): String = scriptPath.getValue(this) ?: ""
     fun setScriptPath(value: String) { scriptPath.setValue(this, value) }

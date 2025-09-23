@@ -7,7 +7,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 @Service(Service.Level.PROJECT)
 @State(
     name = "TestCafeSettings",
-    storages = [Storage("testcafe-runner.xml")]
+    storages = [Storage(".idea/testcafe-runner.xml")]
 )
 class Settings : PersistentStateComponent<Settings> {
 

@@ -7,14 +7,13 @@ import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.FormBuilder
-import javax.swing.JComponent
-import javax.swing.JPanel
-import javax.swing.JSpinner
-import javax.swing.SpinnerNumberModel
+import java.awt.BorderLayout
+import javax.swing.*
 
 class SettingsConfigurable(private val project: Project) : Configurable {
 
     private val settings = Settings.getInstance(project)
+    private var modified = false
 
     // UI Components
     private val defaultCommandField = JBTextField()
@@ -31,7 +30,7 @@ class SettingsConfigurable(private val project: Project) : Configurable {
     override fun getDisplayName(): String = "TestCafe Runner"
 
     override fun createComponent(): JComponent {
-        return FormBuilder.createFormBuilder()
+        val formPanel = FormBuilder.createFormBuilder()
             .addLabeledComponent(JBLabel("Default command:"), defaultCommandField, 1, false)
             .addTooltip("Command template for running entire files. Use {filePath} placeholder.")
             .addLabeledComponent(JBLabel("Test command:"), testCommandField, 1, false)
@@ -55,19 +54,33 @@ class SettingsConfigurable(private val project: Project) : Configurable {
             .addTooltip("Default working directory for TestCafe commands (leave empty to detect automatically)")
             .addComponentFillVertically(JPanel(), 0)
             .panel
+
+        val resetButton = JButton("Reset to Defaults")
+        resetButton.addActionListener {
+            resetToDefaults()
+        }
+
+        val southPanel = JPanel(BorderLayout())
+        southPanel.add(resetButton, BorderLayout.WEST)
+
+        val mainPanel = JPanel(BorderLayout())
+        mainPanel.add(formPanel, BorderLayout.CENTER)
+        mainPanel.add(southPanel, BorderLayout.SOUTH)
+
+        return mainPanel
     }
 
     override fun isModified(): Boolean {
-        return defaultCommandField.text != settings.defaultCommand ||
-               testCommandField.text != settings.testCommand ||
-               fixtureCommandField.text != settings.fixtureCommand ||
-               browserField.text != settings.browser ||
-               headlessModeBox.isSelected != settings.headlessMode ||
-               liveModeBox.isSelected != settings.liveMode ||
-               concurrencySpinner.value != settings.concurrency ||
-               timeoutSpinner.value != settings.timeout ||
-               filePatternsField.text != settings.filePatterns ||
-               workingDirectoryField.text != settings.workingDirectory
+        return modified || (defaultCommandField.text != settings.defaultCommand ||
+                testCommandField.text != settings.testCommand ||
+                fixtureCommandField.text != settings.fixtureCommand ||
+                browserField.text != settings.browser ||
+                headlessModeBox.isSelected != settings.headlessMode ||
+                liveModeBox.isSelected != settings.liveMode ||
+                concurrencySpinner.value != settings.concurrency ||
+                timeoutSpinner.value != settings.timeout ||
+                filePatternsField.text != settings.filePatterns ||
+                workingDirectoryField.text != settings.workingDirectory)
     }
 
     override fun apply() {
@@ -84,6 +97,7 @@ class SettingsConfigurable(private val project: Project) : Configurable {
         settings.timeout = timeoutSpinner.value as Int
         settings.filePatterns = filePatternsField.text
         settings.workingDirectory = workingDirectoryField.text
+        modified = false
     }
 
     private fun validateCommandTemplates() {
@@ -152,6 +166,21 @@ class SettingsConfigurable(private val project: Project) : Configurable {
         timeoutSpinner.value = settings.timeout
         filePatternsField.text = settings.filePatterns
         workingDirectoryField.text = settings.workingDirectory
+        modified = false
     }
 
+    private fun resetToDefaults() {
+        val defaultSettings = Settings()
+        defaultCommandField.text = defaultSettings.defaultCommand
+        testCommandField.text = defaultSettings.testCommand
+        fixtureCommandField.text = defaultSettings.fixtureCommand
+        browserField.text = defaultSettings.browser
+        headlessModeBox.isSelected = defaultSettings.headlessMode
+        liveModeBox.isSelected = defaultSettings.liveMode
+        concurrencySpinner.value = defaultSettings.concurrency
+        timeoutSpinner.value = defaultSettings.timeout
+        filePatternsField.text = defaultSettings.filePatterns
+        workingDirectoryField.text = defaultSettings.workingDirectory
+        modified = true
+    }
 }

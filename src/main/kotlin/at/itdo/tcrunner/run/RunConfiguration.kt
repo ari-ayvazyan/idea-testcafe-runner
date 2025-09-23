@@ -59,4 +59,9 @@ class RunConfiguration(
 
     fun getWorkingDirectory(): String = options.getWorkingDirectory()
     fun setWorkingDirectory(value: String) = options.setWorkingDirectory(value)
+
+    fun getEnvs(): MutableMap<String, String> = options.envs
+    fun setEnvs(envs: MutableMap<String, String>) {
+        options.envs = envs
+    }
 }

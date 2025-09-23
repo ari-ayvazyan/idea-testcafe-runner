@@ -3,6 +3,7 @@ package at.itdo.tcrunner.run
 import at.itdo.tcrunner.Settings
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.SettingsEditor
+import com.intellij.execution.configuration.EnvironmentVariablesComponent
 import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.components.JBCheckBox
@@ -23,6 +24,7 @@ class RunConfigurationEditor : SettingsEditor<RunConfiguration>() {
     private val liveModeBox = JBCheckBox("Live mode")
     private val customCommandField = JBTextField()
     private val workingDirectoryField = TextFieldWithBrowseButton()
+    private val envVarsField = EnvironmentVariablesComponent()
 
     private var currentConfiguration: RunConfiguration? = null
 
@@ -60,6 +62,7 @@ class RunConfigurationEditor : SettingsEditor<RunConfiguration>() {
             .addComponent(liveModeBox)
             .addLabeledComponent("Custom command:", customCommandField)
             .addLabeledComponent("Working directory:", workingDirectoryField)
+            .addLabeledComponent("Environment variables:", envVarsField)
             .addComponentFillVertically(JPanel(), 0)
             .panel
     }
@@ -106,6 +109,7 @@ class RunConfigurationEditor : SettingsEditor<RunConfiguration>() {
         liveModeBox.isSelected = configuration.getLiveMode()
         customCommandField.text = configuration.getCustomCommand()
         workingDirectoryField.text = configuration.getWorkingDirectory()
+        envVarsField.envs = configuration.getEnvs()
 
         // Populate custom command field with template if it's empty
         if (configuration.getCustomCommand().isBlank()) {
@@ -122,5 +126,6 @@ class RunConfigurationEditor : SettingsEditor<RunConfiguration>() {
         configuration.setLiveMode(liveModeBox.isSelected)
         configuration.setCustomCommand(customCommandField.text)
         configuration.setWorkingDirectory(workingDirectoryField.text)
+        configuration.setEnvs(envVarsField.envs)
     }
 }
