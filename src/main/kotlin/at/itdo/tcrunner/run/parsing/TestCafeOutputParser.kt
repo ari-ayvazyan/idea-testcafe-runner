@@ -16,26 +16,20 @@ class TestCafeOutputParser(
     private var collectingFailedTestMessages = false
     private var overallDuration: String = ""
 
-    fun processLine(line: String) {
+    fun processLine(rawLine: String) {
+        val line = TestCafeLineClassifier.stripAnsi(rawLine)
         val lineType = lineClassifier.classifyLine(line)
 
         handleTestExecutionStart(lineType)
-        handleErrorMessageContext(line, lineType)
 
         when (lineType) {
             LineType.TEST_RESULT -> handleTestResult(line)
             LineType.TEST_RUN_SUMMARY -> handleTestRunSummary(line)
             LineType.FIXTURE -> handleFixture(line)
-            LineType.ERROR_MESSAGE -> {
-                if (collectingFailedTestMessages) {
-                    handleMessage(line)
-                }
-            }
-            LineType.REGULAR_MESSAGE -> {
+            LineType.ERROR_MESSAGE, LineType.REGULAR_MESSAGE -> {
                 handleMessage(line)
             }
             LineType.EMPTY, LineType.TEST_EXECUTION_START -> {
-                // Only collect non-blank lines as messages
                 if (line.isNotBlank()) {
                     handleMessage(line)
                 }
@@ -55,25 +49,6 @@ class TestCafeOutputParser(
             eventEmitter.emitTestRunStarted()
             hasEmittedStart = true
         }
-    }
-
-    private fun handleErrorMessageContext(line: String, lineType: LineType) {
-        // The original logic was: if we're collecting failed test messages and we encounter
-        // a line that matches the error pattern, we should finish the current failed test
-        if (collectingFailedTestMessages && shouldStopCollectingFailedTestMessages(line)) {
-            failCurrentTestIfExists()
-            collectingFailedTestMessages = false
-        }
-    }
-
-    private fun shouldStopCollectingFailedTestMessages(line: String): Boolean {
-        val trimmed = line.trim()
-        return trimmed.isNotBlank() &&
-               !trimmed.contains("Browser:") &&
-               !line.matches(Regex("\\s*\\d+\\).*")) &&
-               !line.matches(Regex("\\s*\\d+\\s\\|.*")) &&
-               !line.matches(Regex("\\s*>\\s\\d+\\s\\|.*")) &&
-               !trimmed.startsWith("at ")
     }
 
     private fun handleTestResult(line: String) {
@@ -153,17 +128,8 @@ class TestCafeOutputParser(
 
     private fun finishTestRun() {
         // If we still have a failed test in progress, emit it now
-        currentTest?.let { testName ->
-            val collectedMessages = messageCollector.getCollectedMessagesOrDefault("Test failed")
-            eventEmitter.emitTestPassed(testName, collectedMessages)
-            messageCollector.clear()
-            currentTest = null
-            collectingFailedTestMessages = false
-        }
-
+        failCurrentTestIfExists()
         closeCurrentFixtureIfExists()
         eventEmitter.emitTestRunFinished(overallDuration)
     }
-
 }
-

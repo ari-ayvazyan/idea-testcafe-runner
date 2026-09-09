@@ -69,17 +69,29 @@ class RunProfileState(
 
         return when {
             SystemInfo.isWindows -> {
+                // Use cmd.exe /c for Windows execution without PowerShell specific restrictions or extra stdout headers
                 commandLine
-                    .withExePath("powershell")
-                    .withParameters("-Command", "Write-Host \"Working directory: \$(Get-Location)\"; $command")
+                    .withExePath("cmd.exe")
+                    .withParameters("/c", command)
             }
             else -> {
-                // Linux/macOS: Use bash as login shell to load full environment
+                // Linux/macOS: Execute shell command without -i (interactive) or stdout pollution
+                val shellPath = findShellPath()
                 commandLine
-                    .withExePath("bash")
-                    .withParameters("-l", "-i", "-c", "echo \"Working directory: \$(pwd)\" && $command")
+                    .withExePath(shellPath)
+                    .withParameters("-c", command)
             }
         }
+    }
+
+    private fun findShellPath(): String {
+        val candidates = listOf("/bin/bash", "/usr/bin/bash", "/bin/sh", "/usr/bin/sh", "/bin/zsh", "/usr/bin/zsh")
+        for (candidate in candidates) {
+            if (File(candidate).exists()) {
+                return candidate
+            }
+        }
+        return "sh"
     }
 
     private fun buildTestCafeCommand(settings: Settings): String {

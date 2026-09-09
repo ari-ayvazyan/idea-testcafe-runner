@@ -86,7 +86,7 @@ class TeamCityEventEmitter : TestEventEmitter {
 
     override fun emitTestFailed(testName: String, messages: String, duration: String) {
         if (messages.isNotEmpty()) {
-            emitServiceMessage(testStdOut(testName,messages))
+            emitServiceMessage(testStdOut(testName, messages))
             emitServiceMessage(testFailed(testName))
         }
 
@@ -104,21 +104,29 @@ class TeamCityEventEmitter : TestEventEmitter {
     }
 
     internal fun convertDurationToMs(duration: String): String {
-        return when {
-            duration.endsWith("ms") -> duration.dropLast(2)
-            duration.endsWith("s") -> {
-                val seconds = duration.dropLast(1).toDoubleOrNull() ?: 0.0
-                (seconds * 1000).toInt().toString()
+        val trimmed = duration.trim()
+        if (trimmed.isEmpty()) return "0"
+
+        var totalMs = 0.0
+        // Match numbers followed by m, s, or ms (e.g. "1m 30.5s", "1.5s", "500ms")
+        val pattern = Regex("([0-9]+(?:\\.[0-9]+)?)\\s*(ms|s|m)")
+        val matches = pattern.findAll(trimmed).toList()
+
+        if (matches.isNotEmpty()) {
+            for (match in matches) {
+                val value = match.groupValues[1].toDoubleOrNull() ?: 0.0
+                val unit = match.groupValues[2]
+                when (unit) {
+                    "ms" -> totalMs += value
+                    "s" -> totalMs += value * 1000
+                    "m" -> totalMs += value * 60 * 1000
+                }
             }
-            duration.endsWith("m") -> {
-                val minutes = duration.dropLast(1).toDoubleOrNull() ?: 0.0
-                (minutes * 60 * 1000).toInt().toString()
-            }
-            else -> {
-                // Try to parse as plain number (assume milliseconds)
-                duration.toIntOrNull()?.toString() ?: "0"
-            }
+            return totalMs.toInt().toString()
         }
+
+        // Fallback: try parsing as a raw number
+        return trimmed.toIntOrNull()?.toString() ?: "0"
     }
 
     private fun emitServiceMessage(message: String) {

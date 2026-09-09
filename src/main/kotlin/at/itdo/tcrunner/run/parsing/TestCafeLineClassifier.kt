@@ -15,7 +15,19 @@ data class TestRunSummary(val passed: Int, val total: Int, val duration: String)
 
 class TestCafeLineClassifier {
 
-    fun classifyLine(line: String): LineType {
+    companion object {
+        private val ANSI_PATTERN = Regex("\u001B\\[[0-9;?]*[a-zA-Z]")
+        private val TEST_RESULT_PATTERN = Regex("^ (√|×|✖️|✖|✓) (.*)$")
+        private val SUMMARY_FAILED_PATTERN = Regex("(\\d+)/(\\d+)\\s+failed\\s+\\(([^)]+)\\)")
+        private val SUMMARY_PASSED_PATTERN = Regex("(\\d+)\\s+passed\\s+\\(([^)]+)\\)")
+
+        fun stripAnsi(text: String): String {
+            return text.replace(ANSI_PATTERN, "")
+        }
+    }
+
+    fun classifyLine(rawLine: String): LineType {
+        val line = stripAnsi(rawLine)
         val trimmed = line.trim()
 
         return when {
@@ -29,37 +41,27 @@ class TestCafeLineClassifier {
         }
     }
 
-    fun parseTestResult(line: String): TestResult? {
-        if (!isTestResult(line)) return null
+    fun parseTestResult(rawLine: String): TestResult? {
+        val line = stripAnsi(rawLine)
+        val match = TEST_RESULT_PATTERN.find(line) ?: return null
 
-        val isSuccess = line.contains("√") || line.contains("✓")
-
-        // Find the test name after the symbol and space
-        val testName = when {
-            line.startsWith(" √ ") -> line.substring(3).trim()
-            line.startsWith(" × ") -> line.substring(3).trim()
-            line.startsWith(" ✓ ") -> line.substring(3).trim()
-            line.startsWith(" ✖️ ") -> line.substring(4).trim() // ✖️ is 2 chars (+ emoji variation)
-            else -> line.substring(3).trim() // fallback
-        }
+        val symbol = match.groupValues[1]
+        val testName = match.groupValues[2].trim()
+        val isSuccess = symbol == "√" || symbol == "✓"
 
         return TestResult(isSuccess, testName)
     }
 
-    fun parseFixtureName(line: String): String? {
+    fun parseFixtureName(rawLine: String): String? {
+        val line = stripAnsi(rawLine)
         return if (isFixtureLine(line)) line.trim() else null
     }
 
-    fun parseTestRunSummary(line: String): TestRunSummary? {
-        if (!isTestRunSummary(line)) return null
-
+    fun parseTestRunSummary(rawLine: String): TestRunSummary? {
+        val line = stripAnsi(rawLine)
         val trimmed = line.trim()
 
-        // Parse patterns like "2/5 failed (2s)" or "3 passed (1s)"
-        val failedPattern = Regex("(\\d+)/(\\d+)\\s+failed\\s+\\(([^)]+)\\)")
-        val passedPattern = Regex("(\\d+)\\s+passed\\s+\\(([^)]+)\\)")
-
-        val failedMatch = failedPattern.find(trimmed)
+        val failedMatch = SUMMARY_FAILED_PATTERN.find(trimmed)
         if (failedMatch != null) {
             val failed = failedMatch.groupValues[1].toInt()
             val total = failedMatch.groupValues[2].toInt()
@@ -67,7 +69,7 @@ class TestCafeLineClassifier {
             return TestRunSummary(total - failed, total, duration)
         }
 
-        val passedMatch = passedPattern.find(trimmed)
+        val passedMatch = SUMMARY_PASSED_PATTERN.find(trimmed)
         if (passedMatch != null) {
             val passed = passedMatch.groupValues[1].toInt()
             val duration = passedMatch.groupValues[2]
@@ -80,24 +82,29 @@ class TestCafeLineClassifier {
     private fun isTestExecutionStart(line: String): Boolean {
         val trimmed = line.trim()
         return trimmed.isNotEmpty() &&
-               (trimmed.startsWith("Running tests in:") || !line.startsWith(" "))
+               (trimmed.startsWith("Running tests in:") || (!line.startsWith(" ") && trimmed.startsWith("Running tests")))
     }
 
     private fun isTestResult(line: String): Boolean {
-        return line.matches(Regex(" (?:√|×|✖️|✓) .*"))
+        return TEST_RESULT_PATTERN.containsMatchIn(line)
     }
 
     private fun isTestRunSummary(line: String): Boolean {
         val trimmed = line.trim()
-        return trimmed.matches(Regex("\\d+/\\d+\\s+failed.*")) ||
-               trimmed.matches(Regex("\\d+\\s+passed \\(.+\\)"))
+        return SUMMARY_FAILED_PATTERN.containsMatchIn(trimmed) ||
+               SUMMARY_PASSED_PATTERN.containsMatchIn(trimmed)
     }
 
     private fun isFixtureLine(line: String): Boolean {
         val trimmed = line.trim()
         return line.startsWith(" ") &&
                !line.startsWith("  ") &&
-               !line.matches(Regex(" [√×] .*")) &&
+               !isTestResult(line) &&
+               !isTestRunSummary(line) &&
+               !trimmed.startsWith("Running tests") &&
+               !trimmed.startsWith("Browser:") &&
+               !line.matches(Regex("\\s*\\d+\\).*")) &&
+               !trimmed.startsWith("at ") &&
                trimmed != "--"
     }
 
