@@ -26,12 +26,12 @@ This message belongs to Simple test 3!
          20 |  console.log('This message belongs to Simple test 4!');
          21 |  await t.expect(true).ok()
 
-         at <anonymous> (D:\workspace\idea-testcafe-runner\testcafe\tests\simple.test.js:16:19)
-         at asyncGeneratorStep (D:\workspace\idea-testcafe-runner\testcafe\tests\simple.test.js:1:37)
-         at _next (D:\workspace\idea-testcafe-runner\testcafe\tests\simple.test.js:1:37)
-         at <anonymous> (D:\workspace\idea-testcafe-runner\testcafe\tests\simple.test.js:1:37)
-         at <anonymous> (D:\workspace\idea-testcafe-runner\testcafe\tests\simple.test.js:1:37)
-         at <anonymous> (D:\workspace\idea-testcafe-runner\testcafe\tests\simple.test.js:17:2)
+         at <anonymous> (\path\to\project\testcafe\tests\simple.test.js:16:19)
+         at asyncGeneratorStep (\path\to\project\testcafe\tests\simple.test.js:1:37)
+         at _next (\path\to\project\testcafe\tests\simple.test.js:1:37)
+         at <anonymous> (\path\to\project\testcafe\tests\simple.test.js:1:37)
+         at <anonymous> (\path\to\project\testcafe\tests\simple.test.js:1:37)
+         at <anonymous> (\path\to\project\testcafe\tests\simple.test.js:17:2)
 
 
 This message belongs to Simple test 4!
@@ -52,12 +52,12 @@ This message belongs to Simple test 5!
          27 |});
          28 |
 
-         at <anonymous> (D:\workspace\idea-testcafe-runner\testcafe\tests\simple.test.js:26:25)
-         at asyncGeneratorStep (D:\workspace\idea-testcafe-runner\testcafe\tests\simple.test.js:1:37)
-         at _next (D:\workspace\idea-testcafe-runner\testcafe\tests\simple.test.js:1:37)
-         at <anonymous> (D:\workspace\idea-testcafe-runner\testcafe\tests\simple.test.js:1:37)
-         at <anonymous> (D:\workspace\idea-testcafe-runner\testcafe\tests\simple.test.js:1:37)
-         at <anonymous> (D:\workspace\idea-testcafe-runner\testcafe\tests\simple.test.js:27:2)
+         at <anonymous> (\path\to\project\testcafe\tests\simple.test.js:26:25)
+         at asyncGeneratorStep (\path\to\project\testcafe\tests\simple.test.js:1:37)
+         at _next (\path\to\project\testcafe\tests\simple.test.js:1:37)
+         at <anonymous> (\path\to\project\testcafe\tests\simple.test.js:1:37)
+         at <anonymous> (\path\to\project\testcafe\tests\simple.test.js:1:37)
+         at <anonymous> (\path\to\project\testcafe\tests\simple.test.js:27:2)
 
 
 
@@ -79,9 +79,9 @@ This message belongs to Simple test 5!
      20 |  console.log('This message belongs to Simple test 4!');
      21 |  await t.expect(true).ok()
 
-     at <anonymous> (D:\workspace\idea-testcafe-runner\testcafe\tests\simple.test.js:16:19)
-     at asyncGeneratorStep (D:\workspace\idea-testcafe-runner\testcafe\tests\simple.test.js:1:37)
-     at _next (D:\workspace\idea-testcafe-runner\testcafe\tests\simple.test.js:1:37)
-     at <anonymous> (D:\workspace\idea-testcafe-runner\testcafe\tests\simple.test.js:1:37)
-     at <anonymous> (D:\workspace\idea-testcafe-runner\testcafe\tests\simple.test.js:1:37)
-     at <anonymous> (D:\workspace\idea-testcafe-runner\testcafe\tests\simple.test.js:17:2)
+     at <anonymous> (\path\to\project\testcafe\tests\simple.test.js:16:19)
+     at asyncGeneratorStep (\path\to\project\testcafe\tests\simple.test.js:1:37)
+     at _next (\path\to\project\testcafe\tests\simple.test.js:1:37)
+     at <anonymous> (\path\to\project\testcafe\tests\simple.test.js:1:37)
+     at <anonymous> (\path\to\project\testcafe\tests\simple.test.js:1:37)
+     at <anonymous> (\path\to\project\testcafe\tests\simple.test.js:17:2)
