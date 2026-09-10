@@ -17,7 +17,7 @@ class ProcessOutputHandlerTest {
     private lateinit var processHandler: ProcessHandler
     private lateinit var processEvent: ProcessEvent
     private lateinit var capturedOutput: MutableList<String>
-    private val testFilePath = "D:/workspace/idea-testcafe-runner/testcafe/tests/simple.test.js"
+    private val testFilePath = "/path/to/project/testcafe/tests/simple.test.js"
 
     @BeforeEach
     fun setUp() {

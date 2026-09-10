@@ -39,6 +39,7 @@ class TestCafeLineClassifier {
             line.startsWith(" √ ") -> line.substring(3).trim()
             line.startsWith(" × ") -> line.substring(3).trim()
             line.startsWith(" ✓ ") -> line.substring(3).trim()
+            line.startsWith(" ✖ ") -> line.substring(3).trim() // ✖ is 1 char
             line.startsWith(" ✖️ ") -> line.substring(4).trim() // ✖️ is 2 chars (+ emoji variation)
             else -> line.substring(3).trim() // fallback
         }
@@ -84,7 +85,7 @@ class TestCafeLineClassifier {
     }
 
     private fun isTestResult(line: String): Boolean {
-        return line.matches(Regex(" (?:√|×|✖️|✓) .*"))
+        return line.matches(Regex(" (?:√|×|✖️|✖|✓) .*"))
     }
 
     private fun isTestRunSummary(line: String): Boolean {

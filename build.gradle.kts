@@ -17,10 +17,9 @@ repositories {
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html
 dependencies {
     intellijPlatform {
-        create("IU", "2025.2.1")
+        create("WS", "2025.2.1")
 
         // JavaScript plugin for AST parsing
-        bundledPlugin("JavaScript")
     }
 
     // Coroutines - required by IntelliJ Platform

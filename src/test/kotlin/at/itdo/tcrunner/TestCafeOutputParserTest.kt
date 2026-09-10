@@ -14,7 +14,7 @@ class TestCafeOutputParserTest {
 
     private lateinit var eventCollector: TestEventCollector
     private lateinit var scenarioBuilder: TestScenarioBuilder
-    private val testFilePath = "D:/workspace/idea-testcafe-runner/testcafe/tests/simple.test.js"
+    private val testFilePath = "/path/to/project/testcafe/tests/simple.test.js"
 
     @BeforeEach
     fun setUp() {
@@ -121,11 +121,11 @@ class TestCafeOutputParserTest {
     fun `should handle Ubuntu test failure format with ✖️ character`() {
         scenarioBuilder
             .withFixture("Catheter List Widget")
-            .withLine(" ✖️ Displays a filtered list of active catheters (screenshots: /home/ari/IdeaProjects/locatedcare-ou/modules/frontend/testcafe/reports/media/2025-09-16_19-29-13/Catheter List Widget/Displays a filtered list of active catheters/Chrome_139.0.0.0_Ubuntu_24.04/t1-ferrors/1-q1.png)")
+            .withLine(" ✖️ Displays a filtered list of active catheters (screenshots: /path/to/project/testcafe/reports/media/2025-09-16_19-29-13/Catheter List Widget/Displays a filtered list of active catheters/Chrome_139.0.0.0_Ubuntu_24.04/t1-ferrors/1-q1.png)")
             .withLine(" 1/3 failed (2s)")
             .execute()
 
-        eventCollector.assertHasFailedTest("Displays a filtered list of active catheters (screenshots: /home/ari/IdeaProjects/locatedcare-ou/modules/frontend/testcafe/reports/media/2025-09-16_19-29-13/Catheter List Widget/Displays a filtered list of active catheters/Chrome_139.0.0.0_Ubuntu_24.04/t1-ferrors/1-q1.png)")
+        eventCollector.assertHasFailedTest("Displays a filtered list of active catheters (screenshots: /path/to/project/testcafe/reports/media/2025-09-16_19-29-13/Catheter List Widget/Displays a filtered list of active catheters/Chrome_139.0.0.0_Ubuntu_24.04/t1-ferrors/1-q1.png)")
     }
 
     @Test

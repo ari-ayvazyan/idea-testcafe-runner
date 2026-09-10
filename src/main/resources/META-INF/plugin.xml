@@ -39,7 +39,7 @@
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
-    <depends>JavaScript</depends>
+    <depends>com.intellij.modules.javascript</depends>
 
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
